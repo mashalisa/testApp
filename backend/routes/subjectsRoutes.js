@@ -1,0 +1,181 @@
+// npm install swagger-ui-express swagger-jsdoc
+
+const subjectController = require('../controllers/subjectController')
+const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const express = require('express')
+
+const router = express.Router();
+
+router.get('/by-name', authenticateToken, isAdminTeacher,
+    subjectController.getSubjectByName)
+router.get('/', authenticateToken, isAdminTeacher,
+    subjectController.getAllSubject)
+router.get('/:id', authenticateToken, isAdminTeacher,
+    subjectController.getSubjectByID)
+router.post('/', authenticateToken, isAdminTeacher,
+    subjectController.createSubject)
+router.put('/:id', authenticateToken, isAdminTeacher,
+    subjectController.updateSubject)
+router.delete('/:id', authenticateToken, isAdminTeacher,
+    subjectController.deleteSubject)
+
+module.exports = router;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Subject:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: The auto-generated UUID of the  Subject
+ *         name:
+ *           type: string
+ *           description:  name of the  Subject
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp of creation
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp of last update
+ */
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Subject
+ *   description: Subject management API
+ */
+
+
+/**
+ * @swagger
+ * /api/subjects:
+ *   get:
+ *     summary: Returns all  Subjects
+ *     tags: [Subject]
+ *     responses:
+ *       200:
+ *         description: The list of  Subjects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Subject'
+ *
+ *   post:
+ *     summary: Create a new  Subject
+ *     tags: [Subject]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Subject'
+ *     responses:
+ *       201:
+ *         description: The  Subject was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Subject'
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/subjects/{id}:
+ *   get:
+ *     summary: Get a Subject by ID
+ *     tags: [Subject]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The  Subject ID
+ *     responses:
+ *       200:
+ *         description: The  Subject data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Subject'
+ *       404:
+ *         description:  Subject not found
+ *   put:
+ *     summary: Update a  Subject by ID
+ *     tags: [Subject]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The  Subject ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Subject'
+ *     responses:
+ *       200:
+ *         description:  Subject updated
+ *       404:
+ *         description:  Subject not found
+ *
+ *   delete:
+ *     summary: Delete a Subject by ID
+ *     tags: [Subject]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The  Subject ID
+ *     responses:
+ *       200:
+ *         description:  Subject deleted
+ *       404:
+ *         description:  Subject not found
+ */
+
+/**
+ * @swagger
+ * /api/subjects/by-name:
+ *   get:
+ *     summary: Get a  Subject by name
+ *     tags: [Subject]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description:  Subject name
+ *     responses:
+ *       200:
+ *         description:  Subject found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Subject'
+ *       404:
+ *         description:  Subject not found
+ */
