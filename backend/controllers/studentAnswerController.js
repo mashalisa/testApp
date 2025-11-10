@@ -23,7 +23,7 @@ const assingStudentAnswerToTestByName = async(req, res) => {
 const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(req.params.testId,req.params.studentId, req.body)
 
             res.status(200).json({
-                status: success,
+                success: true,
                 data: answers
             })
     }catch(error) {
@@ -35,7 +35,33 @@ const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(r
     
    
 }
+const assingCurrentStudentAnswerToTestByName = async(req, res) => {
+    try {
+         const { studentId, testId } = req.params;
+            const authenticatedUserId = req.user.id;
 
+
+    if (studentId !== authenticatedUserId) {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied — you can only view your own tests"
+      });
+    }
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(testId,studentId, req.body)
+
+            res.status(200).json({
+                success: true,
+                data: answers
+            })
+    }catch(error) {
+           res.status(404).json({
+                success: false,
+                message: error.message
+            })
+    }
+    
+   
+}
 const assignStudentAnswerToTestByIds = async(req, res) => {
     try {
 const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(req.params.testId,req.params.studentId, req.body)
@@ -53,5 +79,31 @@ const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(req
     
    
 }
+const assignCurrentStudentAnswerToTestByIds = async(req, res) => {
+    try {
+        const { studentId, testId } = req.params;
+    const authenticatedUserId = req.user.id;
 
-module.exports = { checkAnswer, assignStudentAnswerToTestByIds, assingStudentAnswerToTestByName };
+
+    if (studentId !== authenticatedUserId) {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied — you can only view your own tests"
+      });
+    }
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(testId,studentId, req.body)
+
+            res.status(200).json({
+                  success: true,
+                data: answers
+            })
+    }catch(error) {
+           res.status(404).json({
+                  success: false,
+                message: error.message
+            })
+    }
+    
+   
+}
+module.exports = { checkAnswer, assignCurrentStudentAnswerToTestByIds,assingCurrentStudentAnswerToTestByName, assignStudentAnswerToTestByIds, assingStudentAnswerToTestByName };

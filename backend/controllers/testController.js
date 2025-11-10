@@ -34,6 +34,21 @@ const testController = {
         }
 
     },
+        async getTestById(req, res) {
+        try {
+            const test = await testServices.getTestById(req.params.id, req.body)
+            res.status(200).json({
+                success: true,
+                data: test
+            })
+        } catch (error) {
+            res.status(404).json({
+                success: false,
+                data: error.message
+            })
+        }
+
+    },
     async createTest(req, res) {
         try {
             const test = await testServices.createTest(req.params.teacherId, req.body)

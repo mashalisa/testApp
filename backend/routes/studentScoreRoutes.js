@@ -1,12 +1,19 @@
 const express = require('express')
 const studentScoreController = require('../controllers/studentScoreController')
 const router = express.Router()  
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
 
 // console.log('Loaded studentScoreController:', studentScoreController);
 
-router.get('/student/:student_id', authenticateToken, isAdminTeacher,
+router.get('/student/:student_id', 
+    authenticateToken, 
+    isAdminTeacher,
     studentScoreController.getAllScoresByStudent)
+router.get('/student/:student_id/my-score', 
+    authenticateToken, 
+    isStudent,
+    studentScoreController.getAllScoresByCurrentStudent)
+    
 router.post('/', authenticateToken, isAdminTeacher,
     studentScoreController.createStudentScore)
 router.post('/calculate/:test_id/:student_id', authenticateToken, isAdminTeacher,
@@ -64,6 +71,39 @@ module.exports = router
 /**
  * @swagger
  * /student-scores/student/{student_id}:
+ *   get:
+ *     summary: Get all test scores for a specific student
+ *     tags: [StudentScores]
+ *     parameters:
+ *       - in: path
+ *         name: student_id
+ *         required: true
+ *         description: UUID of the student
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: List of test scores for the student
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/StudentScore'
+ *       404:
+ *         description: No scores found for this student
+ */
+
+/**
+ * @swagger
+ * /student-scores/student/{student_id}/my-score:
  *   get:
  *     summary: Get all test scores for a specific student
  *     tags: [StudentScores]

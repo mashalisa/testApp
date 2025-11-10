@@ -1,4 +1,4 @@
-const { Test, User,  Grade, CoreSubject, Subject } = require('../configDB/models')
+const { Test, User,  Grade, CoreSubject, Subject, Question, Answer } = require('../configDB/models')
 
 const getAllTest = async () => {
     const tests = await Test.findAll()
@@ -9,7 +9,9 @@ const getAllTest = async () => {
 }
 
 const getTestById = async (id) => {
-    const test = await Test.findByPk(id)
+    const test = await Test.findOne({
+        where: {id}, 
+        include: [{model: Question, include:[Answer]}]})
     if (!test) {
         throw new Error('Test not found')
     }
@@ -25,6 +27,21 @@ const updateTestById = async (id, testData) => {
         throw new Error('a test not found')
     }
 
+ const grade = await Grade.findByPk(grade_id);
+  if (!grade) throw new Error('Grade not found');
+
+  const coreSubject = await CoreSubject.findByPk(coreSubject_id);
+  if (!coreSubject) throw new Error('Core subject not found');
+
+  const subject = await Subject.findByPk(subject_id);
+  if (!subject) throw new Error('Subject not found');
+
+
+    const existingTest = await Test.findOne({ where: { name } });
+
+if (existingTest) {
+    throw new Error('This test already exists')
+}
     const updatedTest = await test.update({
         name: name ?? test.name,
         coreSubject_id: coreSubject_id ?? test.coreSubject_id,

@@ -13,6 +13,17 @@ const getAllTestsByStudent = async (studentId) => {
     return tests
 }
 
+const getAllTestsByCurrentStudent = async (studentId) => {
+    const tests = await StudentTest.findAll({
+        where: { user_id: studentId },
+        include: [Test]
+    })
+    if (!tests || tests.length === 0) {
+        throw new Error('no test for this student')
+    }
+    return tests
+}
+
 const getAllStudentsByTestId = async (testId) => {
     const students = await StudentTest.findAll({ where: { test_id: testId }, include: [User] })
     if (!students || students.length === 0) {
@@ -59,7 +70,7 @@ const createNewTestByStudent = async (testId, studentId, studentTestData) => {
 }
 
 const updateStudentTest = async (testId, studentId, studentTestData) => {
-    if (!testId, !studentId) {
+    if (!testId  || !studentId) {
         throw new Error('Missing data');
     }
     const { end_time, status } = studentTestData
@@ -85,5 +96,5 @@ const deleteStudentTest = async (id) => {
 }
 
 module.exports = {
-    deleteStudentTest, updateStudentTest, createNewTestByStudent, getAllStudentsByTestId, getAllTestsByStudent
+    deleteStudentTest, getAllTestsByCurrentStudent, updateStudentTest, createNewTestByStudent, getAllStudentsByTestId, getAllTestsByStudent
 }

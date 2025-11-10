@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const {User, Teacher} = require('../configDB/models')
+const {User} = require('../configDB/models')
 const jwt = require('jsonwebtoken')
 
 const resiveUser = (user) => ({
@@ -10,7 +10,7 @@ const resiveUser = (user) => ({
   role: user.role
 });
 const registerUser = async (userData, allowedRole) => {
-    const { username, email, password, role, name } = userData;
+    const { username, email, password, role, name, phoneNumber, address, birthDate, profilePicture} = userData;
     console.log(userData, 'userData')
     if (!name || !username || !password || !role || !email) {
         throw new Error('missing data')
@@ -27,13 +27,9 @@ const registerUser = async (userData, allowedRole) => {
     
 
     const user = await User.create({
-        username, email, password, role, name
+        username, email, password, role, name, phoneNumber, address, birthDate, profilePicture
     })
-    if (role === 'teacher') {
-        await Teacher.create({
-            user_id: user.id
-        });
-    }
+
     return {
         message: "User registered successfully",
         user: resiveUser(user)

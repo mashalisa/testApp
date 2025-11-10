@@ -7,14 +7,13 @@ const getCorrectAnswerByAnswerId = async (studentAnswerId) => {
         throw new Error('missing data');
     }
 
-    const studentAnswer = await StudentAnswer.findOne({
-        where: { chosenAnswer_id: studentAnswerId },
+    const studentAnswer = await StudentAnswer.findByPk(studentAnswerId, {
         include: [{
             model: Answer,
             attributes: ['id', 'correctAnswer']
         }]
     })
-    console.log(studentAnswer, 'studentAnswer')
+
     if (!studentAnswer) {
         throw new Error('StudentAnswer not found');
     }

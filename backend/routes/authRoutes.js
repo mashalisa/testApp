@@ -4,15 +4,14 @@ const authController = require('../controllers/authController')
 const {isAdmin, authenticateToken} = require('../middleware/authMiddleware')
 
 
-router.post('/teachers/signup',(req, res) => {
-authenticateToken, isAdmin, authController.registerUser(req, res, ['admin', 'teacher'])
-} 
+  router.post(
+  '/teachers/signup',
+  authenticateToken,
+  isAdmin,
+  (req, res) => authController.registerUser(req, res, ['admin', 'teacher'])
 )
 
-// router.post('/teachers/signup',(req, res) => {
-//  authController.registerUser(req, res, ['admin', 'teacher'])
-// } 
-// )
+
 
 router.post('/students/signup', (req, res) => {
  authController.registerUser(req, res, ['student'])

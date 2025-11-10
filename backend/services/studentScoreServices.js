@@ -1,63 +1,69 @@
-const StudentScore = require('../configDB/models/studentScore')
-const Question = require('../configDB/models/questions')
-const Answer = require('../configDB/models/answers')
-const StudentTest = require('../configDB/models/studentTest')
+const {StudentScore, Question, Answer, StudentAnswer, StudentTest} = require('../configDB/models')
 
 
-const getAllScoresByStudent = async(id) => {
-    const scores = StudentScore.findAll({where:{student_id: id}})
-    if(!scores) {
-        throw new Error ('scores not fount')
-    }
-    return scores
+
+const getAllScoresByStudent = async (id) => {
+  const scores = await StudentScore.findAll({ where: { student_id: id } })
+  if (!scores) {
+    throw new Error('scores not fount')
+  }
+  return scores
 }
 
-const getAllScoresByTestId = async(id) => {
-    const scores = StudentScore.findAll({where:{test_id: id}})
-    if(!scores) {
-        throw new Error ('scores not fount')
-    }
-    return score
+const getAllScoresByTestId = async (id) => {
+  const scores = await StudentScore.findAll({ where: { test_id: id } })
+  if (!scores) {
+    throw new Error('scores not fount')
+  }
+  return scores
 }
 
-createScoreByTestIDByStudentID = async(test_id, student_id) => {
+const createScoreByTestIDByStudentID = async (test_id, student_id) => {
 
-    if(!test_id || !student_id) {
-         throw new Error ('missing data')
-    }
-const questions = await Question.findAll({where: {test_id}, attributes:['id']})
+  if (!test_id || !student_id) {
+    throw new Error('missing data')
+  }
+  const questions = await Question.findAll({ where: { test_id }, attributes: ['id'] })
 
-if(!questions) {
-     throw new Error ('no questions found for this test')
-}
+  if (!questions) {
+    throw new Error('no questions found for this test')
+  }
 
-let CorrectCount = 0;
+  let CorrectCount = 0;
+  
 
-for (const question of questions) {
-    const studentAnswer = await StudentTest.findOne({
-        where: {user_id:student_id, question_id: question.id}
+  const studentTest = await StudentTest.findOne({
+      where: { user_id: student_id, test_id }
     })
-        if (!studentAnswer) continue
+    if(!studentTest) {
+         throw new Error('student and test are not exists')
+    }
+  for (const question of questions) {
+    const studentAnswer = await StudentAnswer.findOne({
+      where: { studentTest_id: studentTest.id, question_id: question.id }
+    })
+    if (!studentAnswer) continue
     const isCorrect = await Answer.findOne({
-         where: {id:studentAnswer.choosenAnswer_id, correctAnswer: true}
+      where: { id: studentAnswer.chosenAnswer_id, correctAnswer: true }
     })
 
-    if(isCorrect) CorrectCount++
-}
+    if (isCorrect) CorrectCount++
+  }
 
-const totalQuestions = questions.length
-const score = (CorrectCount / totalQuestions) * 100
-let existingScore = await StudentScore.findOne({
-    where: {test_id, student_id,}
-})
-if (existingScore) {
-    await existingScore.update({score})
-} else {
-    existingScore = await StudentScore.create({student_id, test_id, score })
-}
+  const totalQuestions = questions.length
+  const score = (CorrectCount / totalQuestions) * 100
+  let existingScore = await StudentScore.findOne({
+    where: { test_id, student_id, }
+  })
+  if (existingScore) {
+    await existingScore.update({ score })
+  } else {
+    existingScore = await StudentScore.create({ student_id, test_id, score })
+  }
 
-return {
-    student_id, test_id, score, totalQuestions, correctAnswer }
+  return {
+    student_id, test_id, score, totalQuestions, CorrectCount
+  }
 
 }
 
@@ -98,5 +104,10 @@ const deleteStudentScore = async (id) => {
 }
 
 module.exports = {
- deleteStudentScore, updateStudentScore,    createStudentScore, createScoreByTestIDByStudentID, getAllScoresByStudent
+  deleteStudentScore,
+  updateStudentScore,
+  createStudentScore,
+  getAllScoresByStudent,
+  getAllScoresByTestId,
+  createScoreByTestIDByStudentID
 }

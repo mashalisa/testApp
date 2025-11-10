@@ -1,15 +1,33 @@
 const questionController = require('../controllers/questionController')
-
+const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
 const express = require('express')
 
 const router = express.Router()
 
-router.get('/', questionController.getAllQuestions)
-router.get('/:id', questionController.getQuestionByID)
-router.get('/test/:testId', questionController.getQuestionByTestId)
-router.put('/:id', questionController.updateQuestion)
-router.delete('/:id', questionController.deleteQuestion)
-router.post('/test/:testId', questionController.createNewQuestion)
+router.get('/', 
+    authenticateToken, 
+    isAdminTeacher,
+    questionController.getAllQuestions)
+router.get('/:id', 
+    authenticateToken,
+     isAdminTeacher,
+    questionController.getQuestionByID)
+router.get('/test/:testId', 
+    authenticateToken, 
+    isAdminTeacher,
+    questionController.getQuestionByTestId)
+router.put('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    questionController.updateQuestion)
+router.delete('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    questionController.deleteQuestion)
+router.post('/test/:testId', 
+    authenticateToken, 
+    isAdminTeacher,
+    questionController.createNewQuestion)
 
 module.exports = router;
 

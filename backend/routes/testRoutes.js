@@ -2,10 +2,16 @@ const testController = require('../controllers/testController')
 
 const express = require('express');
 const router = express.Router()
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
 router.get('/', authenticateToken, isAdminTeacher,
     testController.getAllTest);
-router.get('/:id', authenticateToken, isAdminTeacher,
+router.get('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    testController.getTestById);
+router.get('/:id/studentTest', 
+    authenticateToken, 
+    isStudent,
     testController.getTestById);
 router.put('/:id', authenticateToken, isAdminTeacher,
     testController.updateTest);
@@ -202,3 +208,29 @@ module.exports = router;
  *       500:
  *         description: Server error
  */
+/**
+ * @swagger
+ * /api/tests/{id}/studentTest:
+ *   get:
+ *     summary: Get a Test by ID
+ *     tags: [Tests]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The Test ID
+ *     responses:
+ *       200:
+ *         description: The Test data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Test'
+ *       404:
+ *         description: User not found
+ *
+ * 
+*/
