@@ -39,7 +39,7 @@ router.put('/test/:testId/students/:studentId/end',
     authenticateToken, 
     isStudent,
     studentTestController.updateTestCurrentStudent)
-    
+
 router.delete('/:id', 
     authenticateToken, 
     isAdminTeacher,
@@ -56,7 +56,7 @@ module.exports = router
  *       required:
  *         - user_id
  *         - test_id
- *         - start_time: {
+ *         - start_time: 
  *         - end_time
  *         - status
  *       properties:

@@ -29,7 +29,7 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
     throw new Error('no questions found for this test')
   }
 
-  let CorrectCount = 0;
+  let correctCount = 0;
   
 
   const studentTest = await StudentTest.findOne({
@@ -47,11 +47,11 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
       where: { id: studentAnswer.chosenAnswer_id, correctAnswer: true }
     })
 
-    if (isCorrect) CorrectCount++
+    if (isCorrect) correctCount++
   }
 
   const totalQuestions = questions.length
-  const score = (CorrectCount / totalQuestions) * 100
+  const score = (correctCount / totalQuestions) * 100
   let existingScore = await StudentScore.findOne({
     where: { test_id, student_id, }
   })
@@ -62,7 +62,7 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
   }
 
   return {
-    student_id, test_id, score, totalQuestions, CorrectCount
+    student_id, test_id, score, totalQuestions, correctCount
   }
 
 }
