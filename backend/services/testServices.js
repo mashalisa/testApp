@@ -1,4 +1,4 @@
-const { Test, User,  Grade, CoreSubject, Subject, Question, Answer } = require('../configDB/models')
+const { Test, User,  Grade, CoreSubjects, Subjects, Question, Answer } = require('../configDB/models')
 
 const getAllTest = async () => {
     const tests = await Test.findAll()
@@ -30,10 +30,10 @@ const updateTestById = async (id, testData) => {
  const grade = await Grade.findByPk(grade_id);
   if (!grade) throw new Error('Grade not found');
 
-  const coreSubject = await CoreSubject.findByPk(coreSubject_id);
+  const coreSubject = await CoreSubjects.findByPk(coreSubject_id);
   if (!coreSubject) throw new Error('Core subject not found');
 
-  const subject = await Subject.findByPk(subject_id);
+  const subject = await Subjects.findByPk(subject_id);
   if (!subject) throw new Error('Subject not found');
 
 
@@ -59,7 +59,7 @@ const createTest = async ( teacherId, testData) => {
     if (!name || !coreSubject_id || !subject_id || !grade_id || !teacherId) {
         throw new Error('Missing required data');
     }
-   
+   console.log(testData, 'testData')
     const user = await User.findOne({ where: { id: teacherId, role: 'teacher' } })
     if (!user) {
         throw new Error('Teacher not found');
@@ -68,10 +68,10 @@ const createTest = async ( teacherId, testData) => {
  const grade = await Grade.findByPk(grade_id);
   if (!grade) throw new Error('Grade not found');
 
-  const coreSubject = await CoreSubject.findByPk(coreSubject_id);
+  const coreSubject = await CoreSubjects.findByPk(coreSubject_id);
   if (!coreSubject) throw new Error('Core subject not found');
 
-  const subject = await Subject.findByPk(subject_id);
+  const subject = await Subjects.findByPk(subject_id);
   if (!subject) throw new Error('Subject not found');
 
 

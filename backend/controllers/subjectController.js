@@ -4,11 +4,13 @@ const subjectsServices = require('../services/subjectsServices')
 const subjectController = {
     async createSubject(req, res) {
         try {
-            const { name } = req.body;
-            if (!name || typeof name !== 'string') {
-                return res.status(400).json({ error: 'Invalid Subject name' });
+             const { name, grade_id: gradeId, coreSubject_id: coreSubjectId } = req.body;
+             console.log(name, gradeId, coreSubjectId, 'data')
+            
+            if (!name || !gradeId || !coreSubjectId) {
+                return res.status(400).json({ error: 'Invalid data' });
             }
-            const newSubject = await subjectsServices.createNewSubject(name);
+            const newSubject = await subjectsServices.createNewSubject(name, gradeId, coreSubjectId);
             
             res.status(201).json(newSubject) //201 Created
         } catch (error) {
@@ -50,11 +52,12 @@ const subjectController = {
     },
     async updateSubject(req, res) {
         try {
-               const { name } = req.body;
-            if (!name || typeof name !== 'string') {
-                return res.status(400).json({ error: 'Invalid Subject name' });
+               const { name, grade_id: gradeId, coreSubject_id: coreSubjectId } = req.body;
+            
+            if (!name || !gradeId || coreSubjectId) {
+                return res.status(400).json({ error: 'Invalid data' });
             }
-            const updatedSubject = await subjectsServices.updateSubject(req.params.id, name)
+            const updatedSubject = await subjectsServices.updateSubject(req.params.id, name, gradeId, coreSubjectId)
             res.status(200).json(updatedSubject);
         } catch (error) {
             res.status(400).json({ error: error.message });

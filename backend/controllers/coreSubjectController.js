@@ -4,11 +4,13 @@ const coreSubjectServices = require('../services/coreSubjectsServices')
 const coreSubjectController = {
     async createCoreSubject(req, res) {
         try {
-            const { name } = req.body;
-            if (!name || typeof name !== 'string') {
-                return res.status(400).json({ error: 'Invalid Core Subject name' });
+            const { name, grade_id: gradeId } = req.body;
+      
+      
+            if (!name || !gradeId) {
+                return res.status(400).json({ error: 'Invalid data' });
             }
-            const newCoreSubject = await coreSubjectServices.createNewCoreSubject(name);
+            const newCoreSubject = await coreSubjectServices.createNewCoreSubject(name, gradeId);
             
             res.status(201).json(newCoreSubject) //201 Created
         } catch (error) {
@@ -50,11 +52,11 @@ const coreSubjectController = {
     },
     async updateCoreSubject(req, res) {
         try {
-               const { name } = req.body;
-            if (!name || typeof name !== 'string') {
-                return res.status(400).json({ error: 'Invalid core Subject name' });
+               const { name, grade_id: gradeId } = req.body;
+             if (!name || !gradeId) {
+                return res.status(400).json({ error: 'Invalid data' });
             }
-            const updatedCoreSubject = await coreSubjectServices.updateCoreSubject(req.params.id, name)
+            const updatedCoreSubject = await coreSubjectServices.updateCoreSubject(req.params.id,  name, gradeId)
             res.status(200).json(updatedCoreSubject);
         } catch (error) {
             res.status(400).json({ error: error.message });

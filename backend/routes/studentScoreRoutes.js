@@ -13,7 +13,7 @@ router.get('/student/:student_id/my-score',
     authenticateToken, 
     isStudent,
     studentScoreController.getAllScoresByCurrentStudent)
-    
+
 router.post('/', authenticateToken, isAdminTeacher,
     studentScoreController.createStudentScore)
 router.post('/calculate/:test_id/:student_id', authenticateToken, isAdminTeacher,
@@ -70,7 +70,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores/student/{student_id}:
+ * /student-score/student/{student_id}:
  *   get:
  *     summary: Get all test scores for a specific student
  *     tags: [StudentScores]
@@ -103,7 +103,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores/student/{student_id}/my-score:
+ * /student-score/student/{student_id}/my-score:
  *   get:
  *     summary: Get all test scores for a specific student
  *     tags: [StudentScores]
@@ -136,7 +136,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores:
+ * /student-score:
  *   post:
  *     summary: Manually create a new score for a student
  *     tags: [StudentScores]
@@ -165,7 +165,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores/calculate/{test_id}/{student_id}:
+ * /student-score/calculate/{test_id}/{student_id}:
  *   post:
  *     summary: Automatically calculate and create (or update) a score for a student in a test
  *     tags: [StudentScores]
@@ -203,7 +203,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores/{id}:
+ * /student-score/{id}:
  *   put:
  *     summary: Update a student's score record
  *     tags: [StudentScores]
@@ -230,7 +230,7 @@ module.exports = router
 
 /**
  * @swagger
- * /student-scores/{id}:
+ * /student-score/{id}:
  *   delete:
  *     summary: Delete a student's score record
  *     tags: [StudentScores]

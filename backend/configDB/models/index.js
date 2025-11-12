@@ -1,8 +1,8 @@
 
 const User = require('./users')
 const Grade = require('./grades')
-const CoreSubject = require('./coreSubjects')
-const Subject = require('./subjects')
+const CoreSubjects = require('./coreSubjects')
+const Subjects = require('./subjects')
 const Test = require('./tests')
 const Question = require('./questions')
 const Answer = require('./answers')
@@ -18,7 +18,7 @@ User.belongsToMany(Grade, {
     through: 'TeacherGrade',
     foreignKey: 'teacher_id',
     as: 'grades',
-    otherKey: 'grade_id',    
+    otherKey: 'grade_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 })
@@ -33,34 +33,34 @@ Grade.belongsToMany(User, {
 })
 
 // User (Teacher) ↔ CoreSubject
-User.belongsToMany(CoreSubject, {
+User.belongsToMany(CoreSubjects, {
     through: 'TeacherCoreSubject',
     as: 'coreSubjects',
     foreignKey: 'teacher_id',
-     otherKey: 'coreSubject_id',
+    otherKey: 'coreSubject_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 })
 
-CoreSubject.belongsToMany(User, {
+CoreSubjects.belongsToMany(User, {
     through: 'TeacherCoreSubject',
     as: 'teachers',
     foreignKey: 'coreSubject_id',
-     otherKey: 'teacher_id',
+    otherKey: 'teacher_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 })
 // User (Teacher) ↔ Subject
-User.belongsToMany(Subject, {
+User.belongsToMany(Subjects, {
     through: 'TeacherSubject',
     as: 'subjects',
     foreignKey: 'teacher_id',
-     otherKey: 'subject_id',
+    otherKey: 'subject_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 })
 
-Subject.belongsToMany(User, {
+Subjects.belongsToMany(User, {
     through: 'TeacherSubject',
     as: 'teachers',
     foreignKey: 'subject_id',
@@ -93,23 +93,32 @@ Test.belongsTo(Grade, {
     foreignKey: 'grade_id'
 })
 
+Grade.hasMany(CoreSubjects, {
+    foreignKey: 'grade_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+CoreSubjects.belongsTo(Grade, {
+    foreignKey: 'grade_id'
+});
 
-CoreSubject.hasMany(Test, {
+CoreSubjects.hasMany(Subjects, {
     foreignKey: 'coreSubject_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
-})
-Test.belongsTo(CoreSubject, {
+});
+Subjects.belongsTo(CoreSubjects, {
     foreignKey: 'coreSubject_id'
-})
-Subject.hasMany(Test, {
-    foreignKey: 'subject_id',
+});
+
+Grade.hasMany(Subjects, {
+    foreignKey: 'grade_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
-})
-Test.belongsTo(Subject, {
-    foreignKey: 'subject_id'
-})
+});
+Subjects.belongsTo(Grade, {
+    foreignKey: 'grade_id'
+});
 
 // ======================
 // Test ↔ Question ↔ Answer
@@ -208,16 +217,16 @@ StudentAnswer.belongsTo(Answer, {
 // ======================
 
 User.belongsToMany(User, {
-     through: "TeacherStudent",
-     as: 'students',
+    through: "TeacherStudent",
+    as: 'students',
     foreignKey: 'teacher_id',
     otherKey: 'student_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 })
 User.belongsToMany(User, {
-     through: "TeacherStudent",
-     as: 'teachers',
+    through: "TeacherStudent",
+    as: 'teachers',
     foreignKey: 'student_id',
     otherKey: 'teacher_id',
     onDelete: 'CASCADE',
@@ -225,17 +234,11 @@ User.belongsToMany(User, {
 })
 
 
-User.hasMany(Test, {
-    foreignKey: 'test_id',
-    otherKey: 'teacher_id',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-})
 
 
 module.exports = {
-    Subject,
-    CoreSubject,
+    Subjects,
+    CoreSubjects,
     Grade,
     User,
     Test,

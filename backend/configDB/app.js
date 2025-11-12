@@ -48,7 +48,7 @@ app.use('/api/tests', testRoutes)
 app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
 app.use('/api/student-tests', studentTestRoutes)
-app.use('/api/student-score', studentScoreRoutes)
+app.use('/student-score', studentScoreRoutes)
 app.use('/autorization', authController)
 app.use('/testAnswers', studentAnswerRoutes)
 

@@ -2,8 +2,8 @@ const {sequelize} = require('../configDB/sequelize')
 
 const {  User,
   Grade,
-  CoreSubject,
-  Subject,
+  CoreSubjects,
+  Subjects,
   Test,
   Question,
   Answer} = require('../configDB/models')
@@ -55,9 +55,11 @@ const questionDefs = [
   })
 
     const grade = await Grade.create({ name: 'Grade 5' });
-  const coreSubject = await CoreSubject.create({ name: 'Math' });
-  const subject = await Subject.create({ name: 'Fractions' });
+  const coreSubject = await CoreSubjects.create({ name: 'Math', grade_id:  grade.id});
+  const subject = await Subjects.create({ name: 'Fractions', grade_id:  grade.id, coreSubject_id:  coreSubject.id });
 
+
+  
    const test = await Test.create({
     name: 'Fractions Quiz',
     teacher_id: teacher.id,

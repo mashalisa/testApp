@@ -1,19 +1,23 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../sequelize");
 
-const CoreSubjects  = sequelize.define('CoreSubjects', {
+const CoreSubjects = sequelize.define('CoreSubjects', {
     id: {
-        type:DataTypes.UUID,
-        primaryKey:true,
+        type: DataTypes.UUID,
+        primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
     name: {
         type: DataTypes.STRING,
-        allowNull:false
+        allowNull: false
+    },
+    grade_id: {
+        type: DataTypes.UUID,
+        allowNull: false
     }
 }, {
     tableName: 'core_subjects',
-    timestamps:true
+    timestamps: true
 })
 
 module.exports = CoreSubjects 

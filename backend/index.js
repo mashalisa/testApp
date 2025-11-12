@@ -10,9 +10,10 @@ const startedService = async () => {
 
     // await sequelize.sync({ alter: true, logging: false });
     // await sequelize.sync({ force: true, logging: false });
-console.log('✅ All tables including join tables are created!');
- 
-        await sequelize.sync();
+    await sequelize.sync();
+    console.log('✅ All tables including join tables are created!');
+
+
     console.log('✅ Call models synced successfuly ');
 
     const PORT = 3000
@@ -27,9 +28,9 @@ console.log('✅ All tables including join tables are created!');
 
 
 if (process.env.NODE_ENV !== 'test') {
-    startedService();
-    
-  }
+  startedService();
+
+}
 
 
 

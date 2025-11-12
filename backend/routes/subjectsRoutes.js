@@ -80,7 +80,23 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Subject'
+ *             type: object
+ *             required:
+ *               - name
+ *               - grade_id
+ *               - coreSubject_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Midterm Exam"
+ *               grade_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "c781cfa7-6a2e-4e19-8e2f-4875b745c81d"
+ *               coreSubject_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "c781cfa7-6a2e-4e19-8e2f-4875b745c81d"
  *     responses:
  *       201:
  *         description: The  Subject was successfully created
@@ -131,7 +147,26 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Subject'
+ *             type: object
+ *             required:
+ *               - name
+ *               - grade_id
+ *               - coreSubject_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Midterm Exam"
+ *               text_URL:
+ *                 type: string
+ *                 example: "https://www.exam.com/math/algebra/123"
+ *               grade_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "c781cfa7-6a2e-4e19-8e2f-4875b745c81d"
+ *               coreSubject_id:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "c781cfa7-6a2e-4e19-8e2f-4875b745c81d"
  *     responses:
  *       200:
  *         description:  Subject updated

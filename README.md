@@ -2,6 +2,42 @@
 
 A comprehensive exam management system with backend API and frontend interface.
 
+## 🔁 Backend Review (Nov 2025)
+
+Latest audit observations:
+
+1. **Subject controller still expects wrapped payloads**
+   ```53:56:backend/controllers/subjectController.js
+const { data } = req.body;
+if (!data) {
+  return res.status(400).json({ error: 'missing' });
+}
+   ```
+   Routes require `{ data: { name, gradeId, coreSubjectId } }`. If the frontend sends a flat JSON body (more typical), this branch rejects it. Consider unwrapping the body in the controller or update the contract to clarify.
+
+2. **Subject service validation typo**
+   ```70:72:backend/services/subjectsServices.js
+if (typeof name !== 'string' || !name.trim()) {
+  throw new Error('Missing core subject name');
+}
+   ```
+   Message should say “Invalid subject name” (currently references core subjects). Everything else looks correct: FKs are persisted properly and the grade/core-subject relationship is enforced.
+
+3. **Core subject service/enforcement** ✅
+   - `createNewCoreSubject` and `updateCoreSubject` now validate `gradeId`, ensure the grade exists, and prevent duplicates within the same grade.
+
+4. **Model relationships** ✅
+   - `Subjects` table includes `coreSubject_id` and `grade_id`.
+   - Associations (`Grade.hasMany(CoreSubject)`, `CoreSubject.hasMany(Subject)`, etc.) match the schema.
+
+5. **Integration tests** ✅
+   - `seedTestData` seeds the hierarchy and your student flow test uses the returned IDs. Run `npm test` with SQLite or a test DB to verify everything stays green.
+
+### Recommended next steps
+- Decide on a consistent controller request shape (wrapped `data` vs flat body). Update Swagger and the frontend accordingly.
+- Tweak the subject validation message for clarity.
+- Run the integration suite after changes, then refresh Swagger docs for the new FKs.
+
 ## Backend Documentation
 
 ### Overview
@@ -146,6 +182,18 @@ Swagger UI is available at `/api-docs` endpoint, providing interactive API docum
 - Request/response schemas
 - Authentication requirements
 - Example requests
+
+### ✅ Final Review & Suggestions
+
+- ✅ **Hierarchical models** — `Grade`, `CoreSubject`, and `Subject` now have proper FK columns and associations. Controllers/services correctly validate grade/core-subject assignments.
+- ⚠️ **Controller payload shape** — `createSubject`/`updateSubject` and the core subject equivalents still expect `{ data: { … } }`. Consider accepting flat JSON to simplify frontend integration (or document the wrapper explicitly).
+- ⚠️ **Validation messages** — Tweak phrases like “Missing core subject name” (when validating subjects) for clarity.
+- ✅ **Integration coverage** — `seedTestData` and `studentFlow.test.js` now exercise the end-to-end path (teacher assigns, student submits, score calculated). Run `npm test` after any schema change.
+- ⚠️ **Swagger** — Update the docs to reflect the new request/response structures (grade/core-subject IDs) and add examples for the student flow.
+- 🔄 **Next steps**:
+  1. Decide on a single request shape (flat vs. wrapped) for create/update routes.
+  2. Update Swagger once payloads are final.
+  3. Run the integration suite against a dedicated test DB (SQLite in-memory recommended for Jest).
 
 
 

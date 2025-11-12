@@ -55,7 +55,7 @@ test('student completes a test and receives a score', async () => {
      .expect(200);
 
      const scoreRes = await request(app)
-    .post(`/api/student-score/calculate/${exam.id}/${student.id}`)
+    .post(`/student-score/calculate/${exam.id}/${student.id}`)
     .set('Authorization', `Bearer ${teacherToken}`)
     .expect(201);
 console.log(scoreRes.body); 
