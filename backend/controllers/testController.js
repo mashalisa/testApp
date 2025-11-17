@@ -21,7 +21,7 @@ const testController = {
     },
     async getTestById(req, res) {
         try {
-            const test = await testServices.getTestById(req.params.id, req.body)
+            const test = await testServices.getTestById(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: test
@@ -36,7 +36,7 @@ const testController = {
     },
         async getTestById(req, res) {
         try {
-            const test = await testServices.getTestById(req.params.id, req.body)
+            const test = await testServices.getTestById(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: test
@@ -51,7 +51,7 @@ const testController = {
     },
     async createTest(req, res) {
         try {
-            const test = await testServices.createTest(req.params.teacherId, req.body)
+            const test = await testServices.createTest(req.validatedParams.teacherId, req.validatedBody)
             res.status(201).json({
                 success: true,
                 data: test
@@ -66,7 +66,7 @@ const testController = {
     },
     async updateTest(req, res) {
         try {
-            const updateTest = await testServices.updateTestById(req.params.id, req.body)
+            const updateTest = await testServices.updateTestById(req.validatedParams.id, req.validatedBody)
             res.status(200).json({
                 success: true,
                 data: updateTest
@@ -81,7 +81,7 @@ const testController = {
     },
     async deleteTest(req, res) {
         try {
-            const deletedtest = await testServices.deleteTestById(req.params.id, req.body)
+            const deletedtest = await testServices.deleteTestById(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: deletedtest

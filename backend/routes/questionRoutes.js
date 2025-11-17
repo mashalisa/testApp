@@ -1,32 +1,57 @@
 const questionController = require('../controllers/questionController')
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
 const express = require('express')
 
 const router = express.Router()
 
-router.get('/', 
-    authenticateToken, 
+const Joi = require('joi')
+const {validate, validateParams} = require('../middleware/validate')
+
+const questionSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+});
+const questionUpdateSchema = Joi.object({
+    name: Joi.string().trim().min(1).optional(),
+});
+const questionParamsSchema  = Joi.object({
+    testId: Joi.string().uuid().required(),
+});
+const questionParamsIdSchema  = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+
+
+router.get('/',
+    authenticateToken,
     isAdminTeacher,
     questionController.getAllQuestions)
-router.get('/:id', 
+router.get('/:id',
     authenticateToken,
-     isAdminTeacher,
+    isAdminTeacher,
+    validateParams(questionParamsIdSchema),
     questionController.getQuestionByID)
-router.get('/test/:testId', 
-    authenticateToken, 
+router.get('/test/:testId',
+    authenticateToken,
     isAdminTeacher,
+     validateParams(questionParamsSchema),
     questionController.getQuestionByTestId)
-router.put('/:id', 
-    authenticateToken, 
+router.put('/:id',
+    authenticateToken,
     isAdminTeacher,
+    validate(questionUpdateSchema),
+    validateParams(questionParamsIdSchema),
     questionController.updateQuestion)
-router.delete('/:id', 
-    authenticateToken, 
+router.delete('/:id',
+    authenticateToken,
     isAdminTeacher,
+      validateParams(questionParamsIdSchema),
     questionController.deleteQuestion)
-router.post('/test/:testId', 
-    authenticateToken, 
+router.post('/test/:testId',
+    authenticateToken,
     isAdminTeacher,
+    validate(questionSchema),
+    validateParams(questionParamsSchema),
     questionController.createNewQuestion)
 
 module.exports = router;

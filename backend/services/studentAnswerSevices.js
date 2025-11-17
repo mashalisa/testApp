@@ -3,9 +3,6 @@ const { StudentAnswer, Answer, StudentTest, Question } = require('../configDB/mo
 
 
 const getCorrectAnswerByAnswerId = async (studentAnswerId) => {
-    if (!studentAnswerId) {
-        throw new Error('missing data');
-    }
 
     const studentAnswer = await StudentAnswer.findByPk(studentAnswerId, {
         include: [{
@@ -26,9 +23,7 @@ const getCorrectAnswerByAnswerId = async (studentAnswerId) => {
 module.exports = { getCorrectAnswerByAnswerId };
 
 const assingStudentAnswerToTestWithNames = async (testId, studentId, answersArray) => {
-    if (!testId || !studentId) {
-        throw new Error('testId or studentId is missing');
-    }
+ 
     const studentTest = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } })
 
     if (!studentTest) {
@@ -67,10 +62,10 @@ const assingStudentAnswerToTestWithNames = async (testId, studentId, answersArra
 }
 
 const assingStudentAnswerToTestWithIds = async (testId, studentId, answersArray) => {
+console.log(testId, 'testId')
+console.log(studentId, 'studentId')
+console.log(answersArray, 'answersArray')
 
-    if (!testId || !studentId) {
-        throw new Error('testId or studentId is missing');
-    }
     const studentTest = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } })
 
     if (!studentTest) {

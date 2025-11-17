@@ -19,7 +19,6 @@ const getQuestionById = async (id) => {
 
 
 const getQuestionByTestId = async (testId) => {
-    console.log(testId, 'testId')
     const questions = await Question.findAll({ where: { test_id: testId } })
     if (!questions) {
         throw new Error('question not found')
@@ -30,10 +29,7 @@ const getQuestionByTestId = async (testId) => {
 
 
 const createQuestion = async (testId, dataQuestion) => {
-   
-        if (!dataQuestion.name || !testId) {
-        throw new Error('missing data')
-    }
+
     const test = await Test.findByPk(testId)
     if (!test) {
         throw new Error('test not found')

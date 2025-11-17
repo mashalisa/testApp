@@ -12,9 +12,7 @@ const resiveUser = (user) => ({
 const registerUser = async (userData, allowedRole) => {
     const { username, email, password, role, name, phoneNumber, address, birthDate, profilePicture} = userData;
     console.log(userData, 'userData')
-    if (!name || !username || !password || !role || !email) {
-        throw new Error('missing data')
-    }
+   
     const existingUser = await User.findOne({ where: { [Op.or]: [{ email }, { username }] } })
     if (existingUser) {
         throw new Error('the user  already exists')
@@ -37,13 +35,9 @@ const registerUser = async (userData, allowedRole) => {
     }
 }
 const loginUser = async (userData, allowedRoles) => {
-    console.log(userData, 'user login')
-    console.log(allowedRoles, 'user login')
+  
     const { username, password } = userData;
-    if (!username || !password) {
-        throw new Error('missing data')
-    }
-
+   
     const user = await User.findOne({ where: { username } })
     if (!user) {
         throw new Error('this user is not exists')

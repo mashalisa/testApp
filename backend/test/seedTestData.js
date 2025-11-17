@@ -50,9 +50,10 @@ const questionDefs = [
     name: 'Bob Student',
     username: 'bob',
     email: 'student@example.com',
-    password: 'bob',  
+    password: 'bobbob',  
     role: 'student',
   })
+
 
     const grade = await Grade.create({ name: 'Grade 5' });
   const coreSubject = await CoreSubjects.create({ name: 'Math', grade_id:  grade.id});

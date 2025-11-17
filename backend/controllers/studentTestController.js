@@ -3,7 +3,7 @@ const studentTestService = require('../services/studentTestServices')
 const studentTestController = {
     async getAllStudentsByTestId(req, res) {
         try {
-            const students = await studentTestService.getAllStudentsByTestId(req.params.testId)
+            const students = await studentTestService.getAllStudentsByTestId(req.validatedParams.testId)
             res.status(200).json({
                 success: true,
                 data: students
@@ -18,7 +18,7 @@ const studentTestController = {
     },
     async getAllTestsByStudentId(req, res) {
         try {
-            const tests = await studentTestService.getAllTestsByStudent(req.params.studentId)
+            const tests = await studentTestService.getAllTestsByStudent(req.validatedParams.studentId)
             res.status(200).json({
                 success: true,
                 data: tests
@@ -33,7 +33,7 @@ const studentTestController = {
     },
     async getAllTestsByCurrentStudentId(req, res) {
         try {
-            const { studentId } = req.params;
+            const { studentId } = req.validatedParams;
             const authenticatedUserId = req.user.id;
             if (studentId !== authenticatedUserId) {
                 return res.status(403).json({
@@ -57,7 +57,7 @@ const studentTestController = {
 
     async createNewTestStudent(req, res) {
         try {
-            const entry = await studentTestService.createNewTestByStudent(req.params.testId, req.params.studentId, req.body)
+            const entry = await studentTestService.createNewTestByStudent(req.validatedParams.testId, req.validatedParams.studentId, req.validatedBody)
             res.status(201).json({
                 success: true,
                 data: entry
@@ -73,7 +73,7 @@ const studentTestController = {
 
     async createNewTestCurrentStudent(req, res) {
         try {
-            const {studentId, testId} = req.params
+            const {studentId, testId} = req.validatedParams
             const authenticatedUserId  = req.user.id
             if(studentId !== authenticatedUserId) {
                return   res.status(403).json({
@@ -81,7 +81,7 @@ const studentTestController = {
                 error: "Access denied — you can only make your own tests"
             })
             }
-            const entry = await studentTestService.createNewTestByStudent(testId, studentId, req.body)
+            const entry = await studentTestService.createNewTestByStudent(testId, studentId, req.validatedBody)
             res.status(201).json({
                 success: true,
                 data: entry
@@ -96,7 +96,7 @@ const studentTestController = {
     },
     async updateTestStudent(req, res) {
         try {
-            const entry = await studentTestService.updateStudentTest(req.params.testId, req.params.studentId, req.body)
+            const entry = await studentTestService.updateStudentTest(req.validatedParams.testId, req.validatedParams.studentId, req.validatedBody)
             res.status(200).json({
                 success: true,
                 data: entry
@@ -110,7 +110,7 @@ const studentTestController = {
 
     },
         async updateTestCurrentStudent(req, res) {
-            const {studentId, testId} = req.params
+            const {studentId, testId} = req.validatedParams
             const authenticatedUserId  = req.user.id
             if(studentId !== authenticatedUserId) {
                 return  res.status(403).json({
@@ -119,7 +119,7 @@ const studentTestController = {
             })
             }
         try {
-            const entry = await studentTestService.updateStudentTest(testId, studentId, req.body)
+            const entry = await studentTestService.updateStudentTest(testId, studentId, req.validatedBody)
             res.status(200).json({
                 success: true,
                 data: entry
@@ -134,7 +134,7 @@ const studentTestController = {
     },
     async deleteStudentTest(req, res) {
         try {
-            const entry = await studentTestService.deleteStudentTest(req.params.id)
+            const entry = await studentTestService.deleteStudentTest(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: entry

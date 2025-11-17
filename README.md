@@ -183,17 +183,5 @@ Swagger UI is available at `/api-docs` endpoint, providing interactive API docum
 - Authentication requirements
 - Example requests
 
-### ✅ Final Review & Suggestions
-
-- ✅ **Hierarchical models** — `Grade`, `CoreSubject`, and `Subject` now have proper FK columns and associations. Controllers/services correctly validate grade/core-subject assignments.
-- ⚠️ **Controller payload shape** — `createSubject`/`updateSubject` and the core subject equivalents still expect `{ data: { … } }`. Consider accepting flat JSON to simplify frontend integration (or document the wrapper explicitly).
-- ⚠️ **Validation messages** — Tweak phrases like “Missing core subject name” (when validating subjects) for clarity.
-- ✅ **Integration coverage** — `seedTestData` and `studentFlow.test.js` now exercise the end-to-end path (teacher assigns, student submits, score calculated). Run `npm test` after any schema change.
-- ⚠️ **Swagger** — Update the docs to reflect the new request/response structures (grade/core-subject IDs) and add examples for the student flow.
-- 🔄 **Next steps**:
-  1. Decide on a single request shape (flat vs. wrapped) for create/update routes.
-  2. Update Swagger once payloads are final.
-  3. Run the integration suite against a dedicated test DB (SQLite in-memory recommended for Jest).
-
 
 

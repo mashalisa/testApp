@@ -2,24 +2,49 @@ const express = require('express')
 const router  = express.Router()
 const authController = require('../controllers/authController')
 const {isAdmin, authenticateToken} = require('../middleware/authMiddleware')
+const {validate} = require('../middleware/validate');
+const Joi = require('joi')
 
+
+const baseUserSchema = Joi.object({
+  name: Joi.string().trim().min(1).lowercase().required(),
+  username: Joi.string().trim().min(1).lowercase().required(),
+  email: Joi.string().trim().email().lowercase().required(),
+  password: Joi.string().trim().min(5).required(),
+  phoneNumber: Joi.string().optional(),
+  address: Joi.string().trim().min(1).lowercase().optional(),
+  birthDate: Joi.date().optional(),
+});
+const studentSignupSchema = baseUserSchema.append({
+  role: Joi.string().valid('student').required(),
+});
+
+const teacherSignupSchema = baseUserSchema.append({
+  role: Joi.string().valid('teacher', 'admin').required(),
+});
+
+const loginSchema = Joi.object({
+  username: Joi.string().trim().min(1).lowercase().required(),
+  password: Joi.string().trim().min(5).required(),
+})
 
   router.post(
   '/teachers/signup',
   authenticateToken,
   isAdmin,
+  validate(teacherSignupSchema),
   (req, res) => authController.registerUser(req, res, ['admin', 'teacher'])
 )
 
 
 
-router.post('/students/signup', (req, res) => {
+router.post('/students/signup',  validate(studentSignupSchema),(req, res) => {
  authController.registerUser(req, res, ['student'])
 });
-router.post('/teachers/login', (req, res) => {
+router.post('/teachers/login', validate(loginSchema),(req, res) => {
     authController.login(req, res, ['admin', 'teacher'])
 })
-router.post('/students/login', (req, res) => {
+router.post('/students/login',  validate(loginSchema), (req, res) => {
     authController.login(req, res, ['student', 'admin', 'teacher'])
 })
 

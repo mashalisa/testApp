@@ -3,24 +3,61 @@ const studentScoreController = require('../controllers/studentScoreController')
 const router = express.Router()  
 const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
 
-// console.log('Loaded studentScoreController:', studentScoreController);
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
+
+const scoreSchema = Joi.object({
+    score: Joi.number().min(0).max(100).required()
+});
+
+const studentTestParamSchema = Joi.object({
+  student_id: Joi.string().uuid().required(),
+  test_id: Joi.string().uuid().required(),
+});
+
+const studentIdParamSchema = Joi.object({
+    student_id: Joi.string().uuid().required(),
+});
+const testIdParamIdSchema = Joi.object({
+    test_id: Joi.string().uuid().required(),
+});
+const scoreIdParamIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
 
 router.get('/student/:student_id', 
     authenticateToken, 
     isAdminTeacher,
+    validateParams(studentIdParamSchema),
     studentScoreController.getAllScoresByStudent)
 router.get('/student/:student_id/my-score', 
     authenticateToken, 
     isStudent,
+    validateParams(studentIdParamSchema),
     studentScoreController.getAllScoresByCurrentStudent)
 
-router.post('/', authenticateToken, isAdminTeacher,
+router.post('/:test_id/:student_id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(studentIdParamSchema),
+    validateParams(testIdParamIdSchema),
     studentScoreController.createStudentScore)
-router.post('/calculate/:test_id/:student_id', authenticateToken, isAdminTeacher,
+router.post('/calculate/:test_id/:student_id', 
+    authenticateToken,
+     isAdminTeacher,
+     validateParams(studentTestParamSchema),
     studentScoreController.createScoreByTestIDByStudentID)
-router.put('/:id', authenticateToken, isAdminTeacher,
+router.put('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(scoreIdParamIdSchema),
+    validate(scoreSchema),
     studentScoreController.updateStudentScore)
-router.delete('/:id', authenticateToken, isAdminTeacher,
+router.delete('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+     validateParams(scoreIdParamIdSchema),
     studentScoreController.deleteStudentScore)
 
 module.exports = router
@@ -140,6 +177,21 @@ module.exports = router
  *   post:
  *     summary: Manually create a new score for a student
  *     tags: [StudentScores]
+ *     parameters:
+ *       - in: path
+ *         name: test_id
+ *         required: true
+ *         description: UUID of the test
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: student_id
+ *         required: true
+ *         description: UUID of the student
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:

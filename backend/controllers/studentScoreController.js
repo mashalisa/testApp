@@ -3,7 +3,7 @@ const studentScoreServices = require('../services/studentScoreServices')
 const studentScoreController = {
     async getAllScoresByStudent(req, res) {
         try {
-            const scores = await studentScoreServices.getAllScoresByStudent(req.params.student_id)
+            const scores = await studentScoreServices.getAllScoresByStudent(req.validatedParams.student_id)
             res.status(200).json({
                 success: true,
                 data: scores
@@ -18,7 +18,7 @@ const studentScoreController = {
     },
     async getAllScoresByCurrentStudent(req, res) {
         try {
-            const { student_id } = req.params;
+            const { student_id } = req.validatedParams;
             const authenticatedUserId = req.user.id;
 
             if (student_id !== authenticatedUserId) {
@@ -42,7 +42,7 @@ const studentScoreController = {
     },
     async createStudentScore(req, res) {
         try {
-            const newScoreEnter = await studentScoreServices.createStudentScore(req.body)
+            const newScoreEnter = await studentScoreServices.createStudentScore(req.validatedParams.student_id, req.validatedParams.test_id)
             res.status(201).json({
                 success: true,
                 data: newScoreEnter
@@ -57,7 +57,7 @@ const studentScoreController = {
     },
     async createScoreByTestIDByStudentID(req, res) {
         try {
-            const newScoreEnter = await studentScoreServices.createScoreByTestIDByStudentID(req.params.test_id, req.params.student_id,)
+            const newScoreEnter = await studentScoreServices.createScoreByTestIDByStudentID(req.validatedParams.test_id, req.validatedParams.student_id,)
             res.status(201).json({
                 success: true,
                 data: newScoreEnter
@@ -72,7 +72,7 @@ const studentScoreController = {
     },
     async updateStudentScore(req, res) {
         try {
-            const updatedScore = await studentScoreServices.updateStudentScore(req.params.id, req.body)
+            const updatedScore = await studentScoreServices.updateStudentScore(req.validatedParams.id, req.validatedBody)
             res.status(200).json({
                 success: true,
                 data: updatedScore
@@ -87,7 +87,7 @@ const studentScoreController = {
     },
     async deleteStudentScore(req, res) {
         try {
-            const deletedScore = await studentScoreServices.deleteStudentScore(req.params.id)
+            const deletedScore = await studentScoreServices.deleteStudentScore(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: deletedScore

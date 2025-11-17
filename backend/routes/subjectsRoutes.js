@@ -1,22 +1,61 @@
 // npm install swagger-ui-express swagger-jsdoc
 
 const subjectController = require('../controllers/subjectController')
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
 const express = require('express')
 
 const router = express.Router();
 
-router.get('/by-name', authenticateToken, isAdminTeacher,
+const Joi = require('joi')
+const { validate, validateParams, validateQuery } = require('../middleware/validate')
+
+const questionSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+    grade_id: Joi.string().uuid().required(),
+    coreSubject_id: Joi.string().uuid().required(),
+});
+const questionUpdateSchema = Joi.object({
+    name: Joi.string().trim().min(1).optional(),
+    grade_id: Joi.string().uuid().optional(),
+    coreSubject_id: Joi.string().uuid().optional(),
+    subject_id: Joi.string().uuid().optional(),
+});
+const questionQuerySchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+});
+const questionParamsIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+
+
+router.get('/by-name',
+    authenticateToken,
+    isAdminTeacher,
+    validateQuery(questionQuerySchema),
     subjectController.getSubjectByName)
 router.get('/', authenticateToken, isAdminTeacher,
     subjectController.getAllSubject)
-router.get('/:id', authenticateToken, isAdminTeacher,
+router.get('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(questionParamsIdSchema),
     subjectController.getSubjectByID)
-router.post('/', authenticateToken, isAdminTeacher,
+router.post('/',
+    authenticateToken,
+    isAdminTeacher,
+    validate(questionSchema),
     subjectController.createSubject)
-router.put('/:id', authenticateToken, isAdminTeacher,
+router.put('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(questionParamsIdSchema),
+    validate(questionUpdateSchema),
     subjectController.updateSubject)
-router.delete('/:id', authenticateToken, isAdminTeacher,
+router.delete('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(questionParamsIdSchema),
     subjectController.deleteSubject)
 
 module.exports = router;

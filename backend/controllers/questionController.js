@@ -3,7 +3,7 @@ const questionService = require('../services/questionServices')
 const questionController = {
     async getQuestionByID(req, res) {
         try {
-            const question = await questionService.getQuestionById(req.params.id)
+            const question = await questionService.getQuestionById(req.validatedParams.id)
             res.status(200).json({
                 success:true,
                 data:question
@@ -17,7 +17,7 @@ const questionController = {
     },
        async getQuestionByTestId(req, res) {
         try {
-            const questions = await questionService.getQuestionByTestId(req.params.testId)
+            const questions = await questionService.getQuestionByTestId(req.validatedParams.testId)
             res.status(200).json({
                 success:true,
                 data:questions
@@ -45,7 +45,7 @@ const questionController = {
     },
     async createNewQuestion(req, res) {
         try {
-            const question = await questionService.createQuestion(req.params.testId, req.body)
+            const question = await questionService.createQuestion(req.validatedParams.testId, req.validatedBody)
             res.status(201).json({
                 success:true,
                 data:question
@@ -59,7 +59,7 @@ const questionController = {
     },
         async updateQuestion(req, res) {
         try {
-            const updatedQuestion = await questionService.updateQuestionById(req.params.id, req.body)
+            const updatedQuestion = await questionService.updateQuestionById(req.validatedParams.id, req.validatedBody)
             res.status(200).json({
                 success:true,
                 data:updatedQuestion,
@@ -74,7 +74,7 @@ const questionController = {
     },
             async deleteQuestion(req, res) {
         try {
-            const deletedQuestion = await questionService.deleteQuestionById(req.params.id)
+            const deletedQuestion = await questionService.deleteQuestionById(req.validatedParams.id)
             res.status(200).json({
                 success:true,
                 data:deletedQuestion

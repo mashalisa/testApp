@@ -4,17 +4,68 @@ const userController = require('../controllers/userController')
 
 const express = require('express')
 
+
+const {validate, validateParams} = require('../middleware/validate');
+const Joi = require('joi')
+
+
+const baseUserSchema = Joi.object({
+  name: Joi.string().trim().min(1).lowercase().required(),
+  username: Joi.string().trim().min(1).lowercase().required(),
+  email: Joi.string().trim().email().lowercase().required(),
+  password: Joi.string().trim().min(5).required(),
+  phoneNumber: Joi.string().optional(),
+  address: Joi.string().trim().min(1).lowercase().optional(),
+  birthDate: Joi.date().optional(),
+});
+
+const userUpdateSchema = Joi.object({
+  name: Joi.string().trim().min(1).lowercase().optional(),
+  username: Joi.string().trim().min(1).lowercase().optional(),
+  email: Joi.string().trim().email().lowercase().optional(),
+  password: Joi.string().trim().min(5).optional(),
+  phoneNumber: Joi.string().optional(),
+  address: Joi.string().trim().min(1).lowercase().optional(),
+  birthDate: Joi.date().optional(),
+});
+
+const studentSignupSchema = baseUserSchema.append({
+  role: Joi.string().valid('student').required(),
+});
+
+const userCreateSchema = baseUserSchema.append({
+  role: Joi.string().valid('teacher', 'admin').required(),
+});
+
+const paramIdSchema = Joi.object({
+  id: Joi.string().uuid().required(),
+})
+
+
 const router = express.Router();
 const {authenticateToken, isAdmin} = require('../middleware/authMiddleware')
 router.get('/', authenticateToken, isAdmin,
     userController.getAllUsers)
-router.get('/:id', authenticateToken, isAdmin,
+router.get('/:id', 
+    authenticateToken,
+     isAdmin,
+     validateParams(paramIdSchema),
     userController.getUserById)
-router.post('/', authenticateToken, isAdmin,
+router.post('/', 
+    authenticateToken, 
+    isAdmin,
+    validate(userCreateSchema),
     userController.createUser)
-router.put('/:id', authenticateToken, isAdmin,
+router.put('/:id', 
+    authenticateToken, 
+    isAdmin,
+    validateParams(paramIdSchema),
+    validate(userUpdateSchema),
     userController.updateUser)
-router.delete('/:id', authenticateToken, isAdmin,
+router.delete('/:id', 
+    authenticateToken,
+     isAdmin,
+     validateParams(paramIdSchema),
     userController.deleteUser)
 
 module.exports = router;

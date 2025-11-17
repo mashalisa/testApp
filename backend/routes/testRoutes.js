@@ -2,22 +2,62 @@ const testController = require('../controllers/testController')
 
 const express = require('express');
 const router = express.Router()
-const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher, isStudent } = require('../middleware/authMiddleware')
+
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
+
+const testSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+    grade_id: Joi.string().uuid().required(),
+    coreSubject_id: Joi.string().uuid().required(),
+    subject_id: Joi.string().uuid().required(),
+    text_URL:Joi.string().optional()
+});
+const testUpdateSchema = Joi.object({
+    name: Joi.string().trim().min(1).optional(),
+    grade_id: Joi.string().uuid().optional(),
+    coreSubject_id: Joi.string().uuid().optional(),
+    subject_id: Joi.string().uuid().optional(),
+    text_URL:Joi.string().optional()
+});
+const paramsTecherIdSchema = Joi.object({
+    teacherId: Joi.string().uuid().required(),
+});
+const paramsTestIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+
+
 router.get('/', authenticateToken, isAdminTeacher,
     testController.getAllTest);
-router.get('/:id', 
+router.get('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(paramsTestIdSchema),
+    testController.getTestById);
+router.get('/:id/studentTest',
+    authenticateToken,
+    isStudent,
+    validateParams(paramsTestIdSchema),
+    testController.getTestById);
+router.put('/:id',
+    authenticateToken,
+    isAdminTeacher,
+     validateParams(paramsTestIdSchema),
+    validate(testUpdateSchema),
+    testController.updateTest);
+router.delete('/:id', 
     authenticateToken, 
     isAdminTeacher,
-    testController.getTestById);
-router.get('/:id/studentTest', 
-    authenticateToken, 
-    isStudent,
-    testController.getTestById);
-router.put('/:id', authenticateToken, isAdminTeacher,
-    testController.updateTest);
-router.delete('/:id', authenticateToken, isAdminTeacher,
+     validateParams(paramsTestIdSchema),
     testController.deleteTest);
-router.post('/:teacherId', authenticateToken, isAdminTeacher,
+router.post('/:teacherId',
+    authenticateToken,
+    isAdminTeacher,
+    validate(testSchema),
+    validateParams(paramsTecherIdSchema),
     testController.createTest);
 
 module.exports = router;

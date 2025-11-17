@@ -1,22 +1,55 @@
 // npm install swagger-ui-express swagger-jsdoc
 
 const coreSubjectController = require('../controllers/coreSubjectController')
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
 const express = require('express')
 
 const router = express.Router();
+const Joi = require('joi')
+const {validate, validateQuery, validateParams} = require('../middleware/validate')
 
-router.get('/by-name', authenticateToken, isAdminTeacher,
+const coreSubject = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+    grade_id: Joi.string().uuid().required()
+});
+const coreSubjectNameSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+});
+
+const coreSubjectParamSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+
+router.get('/by-name', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateQuery(coreSubjectNameSchema),
     coreSubjectController.getCoreSubjectByName)
+
 router.get('/', authenticateToken, isAdminTeacher,
     coreSubjectController.getAllCoreSubject)
-router.get('/:id', authenticateToken, isAdminTeacher,
+router.get('/:id', 
+    authenticateToken,
+     isAdminTeacher,
+     validateParams(coreSubjectParamSchema),
     coreSubjectController.getCoreSubjectByID)
-router.post('/', authenticateToken, isAdminTeacher,
+
+router.post('/',
+    authenticateToken,
+    isAdminTeacher,
+    validate(coreSubject),
     coreSubjectController.createCoreSubject)
-router.put('/:id', authenticateToken, isAdminTeacher,
+router.put('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validate(coreSubject),
+    validateParams(coreSubjectParamSchema),
     coreSubjectController.updateCoreSubject)
-router.delete('/:id', authenticateToken, isAdminTeacher,
+router.delete('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(coreSubjectParamSchema),
     coreSubjectController.deleteCoreSubject)
 
 module.exports = router;

@@ -22,10 +22,6 @@ const getUserById = async(id) => {
 const createUser = async(userData) => {
     const {name, username, role, email, password} = userData;
 
-    if(!name || !username || !role || !email || !password) {
-        throw new Error ('All fields are required: username, password, email, name, role')
-    }
-
     const existUser = await User.findOne({where: {email}});
     if(existUser) {
         throw new Error('A user with this email already exists');

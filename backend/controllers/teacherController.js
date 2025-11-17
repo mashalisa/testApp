@@ -4,7 +4,7 @@ const teacherServices = require('../services/teacherServices')
 const teacherController = {
     async createTeacher(req, res) {
         try {
-            const newTeacher = await teacherServices.createTeacher(req.body)
+            const newTeacher = await teacherServices.createTeacher(req.validatedBody)
             res.status(201).json({
                 success: true,
                 message: 'Teacher created successfully',
@@ -29,7 +29,7 @@ const teacherController = {
 
     async getTeacherById(req, res) {
         try {
-            const teacher = await teacherServices.getTeacherById(req.params.id)
+            const teacher = await teacherServices.getTeacherById(req.validatedParams.id)
             res.status(200).json({
                 success: true,
                 data: teacher,
@@ -40,7 +40,7 @@ const teacherController = {
     },
     async updateTeacherById(req, res) {
         try {
-            const updatedTeacher = await teacherServices.updateTeacher(req.params.id, req.body)
+            const updatedTeacher = await teacherServices.updateTeacher(req.validatedParams.id, req.validatedBody)
             res.status(200).json({
                 success: true,
                 message: 'Teacher updated successfully',
@@ -53,7 +53,7 @@ const teacherController = {
     },
         async assignGradesToTeacher(req, res) {
         try {
-            const gradesToTeacher = await teacherServices.assignGradesToTeacher(req.params.id, req.body)
+            const gradesToTeacher = await teacherServices.assignGradesToTeacher(req.validatedParams.id, req.validatedBody)
             res.status(200).json({
                 success: true,
                 message: 'grades assigned successfully',
@@ -66,7 +66,7 @@ const teacherController = {
     },
     async assignStudentsToTeacher (req, res) {
         try {
-            const assigning =  await teacherServices.assignStudentsToTeacher(req.params.id, req.body) 
+            const assigning =  await teacherServices.assignStudentsToTeacher(req.validatedParams.id, req.validatedBody) 
             res.status(200).json({
                 success: true,
                 message: 'Students assigned successfully',
@@ -78,7 +78,7 @@ const teacherController = {
     },
     async reassignStudentsToTeacher (req, res) {
         try {
-            const reassigning =  await teacherServices.removeAssignStudentFromTeacher(req.params.id, req.body) 
+            const reassigning =  await teacherServices.removeAssignStudentFromTeacher(req.validatedParams.id, req.validatedBody) 
             res.status(200).json({
                 success: true,
                 message: 'Students unassigned successfully',

@@ -1,19 +1,55 @@
 const answerController = require('../controllers/answerController')
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
 const express = require('express')
 const router = express.Router();
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
+
+const answerSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+    correctAnswer: Joi.boolean().required()
+});
+const answersArraySchema = Joi.array().items(answerSchema).min(1);
+const answerParamSchema = Joi.object({
+    questionId: Joi.string().uuid().required(),
+});
+const answerParamIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
 
 
 
 router.get('/', authenticateToken, isAdminTeacher, answerController.getAllAnswers)
-router.get('/:id', authenticateToken, isAdminTeacher, answerController.getAnswerById)
-router.get('/questions/:questionId', authenticateToken, isAdminTeacher,
+router.get('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamIdSchema),
+    answerController.getAnswerById)
+router.get('/questions/:questionId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamSchema),
     answerController.getAnswerByQuestionId)
-router.put('/questions/:questionId', authenticateToken, isAdminTeacher,
+
+router.put('/questions/:questionId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamSchema),
+    validate(answersArraySchema),
     answerController.updateAnswer)
-router.delete('/:id', authenticateToken, isAdminTeacher,
+
+router.delete('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamIdSchema),
     answerController.deleteAnswer)
-router.post('/questions/:questionId', authenticateToken, isAdminTeacher,
+
+router.post('/questions/:questionId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamSchema),
+    validate(answersArraySchema),
     answerController.createNewAnswer)
 
 module.exports = router;

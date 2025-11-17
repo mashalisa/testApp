@@ -17,7 +17,7 @@ const getAnswerById = async(id) => {
 }
 
 const getAnswersByQuestionId = async(questionId) => {
-    const answers = await Question.findAll(id)
+      const answers = await Answer.findAll({ where: { question_id: questionId } });
     if(!answers ) {
         throw new Error ('answers not found')
     }

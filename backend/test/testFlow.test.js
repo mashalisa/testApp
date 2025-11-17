@@ -22,21 +22,21 @@ test('student completes a test and receives a score', async () => {
     const teacherLogin = await request(app)
     .post('/autorization/teachers/login')
     .send({username: 'teacher1', password: 'teacher'})
-    console.log(teacherLogin, 'teacherLogin')
+
 
 
     const teacherToken = teacherLogin.body.data.token;
-    console.log(teacherToken, 'teacherToken')
+
 
      const studentLogin = await request(app)
     .post('/autorization/students/login')
-    .send({username: 'bob', password: 'bob'})
+    .send({username: 'bob', password: 'bobbob'})
 
     console.log(studentLogin, 'studentLogin')
-
     const StudentToken = studentLogin.body.data.token;
 
-    console.log(StudentToken, 'StudentToken')
+console.log(questions, 'questions')
+console.log(questions, 'questions')
 
     await request(app)
     .post(`/api/student-tests/test/${exam.id}/students/${student.id}`) 

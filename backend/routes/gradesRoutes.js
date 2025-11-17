@@ -2,23 +2,56 @@
 
 const gradesController = require('../controllers/gradeController')
 
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
 
 const express = require('express')
 
 const router = express.Router();
 
-router.get('/by-name', authenticateToken, isAdminTeacher,
+const Joi = require('joi')
+const { validate, validateParams, validateQuery } = require('../middleware/validate')
+
+const gradeSchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+});
+
+const gradeParamSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+const gradeQuerySchema = Joi.object({
+    name: Joi.string().trim().min(1).required(),
+});
+
+
+
+router.get('/by-name', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateQuery(gradeQuerySchema),
     gradesController.getGradeByName)
 router.get('/', authenticateToken, isAdminTeacher,
     gradesController.getAllGrades)
-router.get('/:id', authenticateToken, isAdminTeacher,
+router.get('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(gradeParamSchema),
     gradesController.getGradeByID)
-router.post('/', authenticateToken, isAdminTeacher,
+router.post('/',
+    authenticateToken,
+    isAdminTeacher,
+    validate(gradeSchema),
     gradesController.createGrade)
-router.put('/:id', authenticateToken, isAdminTeacher,
+router.put('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(gradeParamSchema),
+    validate(gradeSchema),
     gradesController.updateGrade)
-router.delete('/:id', authenticateToken, isAdminTeacher,
+router.delete('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(gradeParamSchema),
     gradesController.deleteGrade)
 
 module.exports = router;

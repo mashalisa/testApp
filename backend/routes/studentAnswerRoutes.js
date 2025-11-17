@@ -2,6 +2,37 @@ const studentAnswerController  = require('../controllers/studentAnswerController
 
 const express = require('express')
 
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
+
+
+const answersNameArray = Joi.array().items(Joi.object({
+         question: Joi.string().required(),
+         answer: Joi.string().required()
+    })).min(1);
+
+
+const answerIdsArray = Joi.array().items(Joi.object({
+         question: Joi.string().uuid().required(),
+         answer: Joi.string().uuid().required()
+    })).min(1);
+
+
+    const studentTestParamSchema = Joi.object({
+  studentId: Joi.string().uuid().required(),
+  testId: Joi.string().uuid().required(),
+});
+
+const studentIdParamSchema = Joi.object({
+    studentId: Joi.string().uuid().required(),
+});
+const testIdParamIdSchema = Joi.object({
+    testId: Joi.string().uuid().required(),
+});
+const answerIdParamIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
 const router = express.Router()
 
 const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
@@ -9,23 +40,34 @@ const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/au
 router.post('/by-name/student/:studentId/test/:testId', 
     authenticateToken, 
     isAdminTeacher,
+    validateParams(studentTestParamSchema),
+        validate(answersNameArray),
     studentAnswerController.assingStudentAnswerToTestByName)
 
 router.post('/by-name/student/:studentId/test/:testId/submit', 
     authenticateToken, 
     isStudent,
+        validateParams(studentTestParamSchema),
+                validate(answersNameArray),
     studentAnswerController.assingCurrentStudentAnswerToTestByName)
 
 router.post('/by-id/student/:studentId/test/:testId', 
       authenticateToken, isAdminTeacher,
+        validateParams(studentTestParamSchema),
+            validate(answerIdsArray),
       studentAnswerController.assignStudentAnswerToTestByIds)
 
 router.post('/by-id/student/:studentId/test/:testId/submit', 
       authenticateToken,
        isStudent,
+          validateParams(studentTestParamSchema),
+         validate(answerIdsArray),
       studentAnswerController.assignCurrentStudentAnswerToTestByIds)
       
-router.get('/:id',   authenticateToken, isAdminTeacher,
+router.get('/:id',   
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(answerIdParamIdSchema),
     studentAnswerController.checkAnswer)
 
 module.exports = router;
@@ -36,7 +78,7 @@ module.exports = router;
  * /testAnswers/by-name/student/{studentId}/test/{testId}:
  *   post:
  *     summary: Assign student answers to a test (using question and answer names)
- *     tags: [StudentAnswers]
+ *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
  *         name: studentId
@@ -106,7 +148,7 @@ module.exports = router;
  * /testAnswers/by-name/student/{studentId}/test/{testId}/submit:
  *   post:
  *     summary: Assign student answers to a test (using question and answer names)
- *     tags: [StudentAnswers]
+ *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
  *         name: studentId
@@ -175,7 +217,7 @@ module.exports = router;
  * /testAnswers/by-id/student/{studentId}/test/{testId}:
  *   post:
  *     summary: Assign student answers to a test (using question and answer names)
- *     tags: [StudentAnswers]
+ *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
  *         name: studentId
@@ -245,7 +287,7 @@ module.exports = router;
  * /testAnswers/by-id/student/{studentId}/test/{testId}/submit:
  *   post:
  *     summary: Assign student answers to a test (using question and answer names)
- *     tags: [StudentAnswers]
+ *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
  *         name: studentId
@@ -315,7 +357,7 @@ module.exports = router;
  * /testAnswers/{id}:
  *   get:
  *     summary: Check if a student's selected answer is correct
- *     tags: [StudentAnswers]
+ *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
  *         name: id

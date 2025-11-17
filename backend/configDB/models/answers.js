@@ -1,26 +1,31 @@
-const {sequelize} = require('../sequelize')
-const {DataTypes} = require('sequelize')
+const { sequelize } = require('../sequelize')
+const { DataTypes } = require('sequelize')
 
 const Answer = sequelize.define('Answers', {
     id: {
         type: DataTypes.UUID,
-        primaryKey:true,
+        primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
     name: {
         type: DataTypes.STRING,
-        allowNull:false
+        allowNull: false
     },
     correctAnswer: {
-        type:DataTypes.BOOLEAN,
-        allowNull:false
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     },
     question_id: {
-         type: DataTypes.UUID,
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'questions',
+            key: 'id'
+        },
     }
 }, {
-    tableName:'answers',
-    timestamps:true
+    tableName: 'answers',
+    timestamps: true
 })
 
 module.exports = Answer

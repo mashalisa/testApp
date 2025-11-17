@@ -3,17 +3,55 @@ const express = require('express');
 const router = express.Router()
 const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
 
+
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
+
+const assignGragesSchema = Joi.object({
+    grade_id: Joi.string().uuid().required(),
+    coreSubject_id: Joi.string().uuid().required(),
+    subject_id: Joi.string().uuid().required(),
+});
+const studentSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+})
+const assignStudentsSchema = Joi.object({
+  students: Joi.array().items(Joi.string().uuid()).min(1).required()
+});
+const teacherParamsIdSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+});
+
+
 router.get('/', authenticateToken, isAdminTeacher,
     teacherController.getAllTeachers)
-router.get('/:id', authenticateToken, isAdminTeacher,
+router.get('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(teacherParamsIdSchema),
     teacherController.getTeacherById)
-router.put('/:id', authenticateToken, isAdminTeacher,
+router.put('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(teacherParamsIdSchema),
     teacherController.updateTeacherById)
-router.post('/:id', authenticateToken, isAdminTeacher,
+router.post('/:id', 
+    authenticateToken, 
+    isAdminTeacher,
+    validate(assignGragesSchema),
+    validateParams(teacherParamsIdSchema),
     teacherController.assignGradesToTeacher)
-router.post('/:id/students', authenticateToken, isAdminTeacher,
+router.post('/:id/students', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(teacherParamsIdSchema),
+    validate(assignStudentsSchema),
     teacherController.assignStudentsToTeacher)
-router.delete('/:id/students', authenticateToken, isAdminTeacher,
+router.delete('/:id/students', 
+    authenticateToken, 
+    isAdminTeacher,
+     validateParams(teacherParamsIdSchema),
+       validate(assignStudentsSchema),
     teacherController.reassignStudentsToTeacher)
 
 

@@ -1,4 +1,4 @@
-const { Grade, CoreSubject, Subject, User } = require('../configDB/models')
+const { Grade, CoreSubjects, Subjects, User } = require('../configDB/models')
 
 
 const getAllTeachers = async () => {
@@ -22,13 +22,13 @@ const getTeacherById = async (id) => {
                 through: { attributes: [] }
             },
             {
-                model: CoreSubject,
+                model: CoreSubjects,
                 as: 'coreSubjects',
                 attributes: ['id', 'name'],
                 through: { attributes: [] }
             },
             {
-                model: Subject,
+                model: Subjects,
                 as: 'subjects',
                 attributes: ['id', 'name'],
                 through: { attributes: [] }
@@ -57,14 +57,14 @@ const assignGradesToTeacher = async (id, data) => {
     }
 
     if (coreSubjects && coreSubjects.length > 0) {
-        const coreRecords = await CoreSubject.findAll({ where: { name: coreSubjects } });
+        const coreRecords = await CoreSubjects.findAll({ where: { name: coreSubjects } });
         if (coreRecords.length === 0) throw new Error('No valid core subjects found');
         await teacher.addCoreSubjects(coreRecords.map(c => c.id));
     }
 
 
     if (subjects && subjects.length > 0) {
-        const subjectRecords = await Subject.findAll({ where: { name: subjects } });
+        const subjectRecords = await Subjects.findAll({ where: { name: subjects } });
         if (subjectRecords.length === 0) throw new Error('No valid subjects found');
         await teacher.addSubjects(subjectRecords.map(s => s.id));
     }
@@ -73,8 +73,8 @@ const assignGradesToTeacher = async (id, data) => {
         where: { id },
         include: [
             { model: Grade, as: 'grades', attributes: ['id', 'name'], through: { attributes: [] } },
-            { model: CoreSubject, as: 'coreSubjects', attributes: ['id', 'name'], through: { attributes: [] } },
-            { model: Subject, as: 'subjects', attributes: ['id', 'name'], through: { attributes: [] } },
+            { model: CoreSubjects, as: 'coreSubjects', attributes: ['id', 'name'], through: { attributes: [] } },
+            { model: Subjects, as: 'subjects', attributes: ['id', 'name'], through: { attributes: [] } },
         ]
     });
 }
@@ -100,7 +100,7 @@ const updateTeacher = async (id, teacherData) => {
         if (teacherData.coreSubjects.length === 0) {
             await teacher.setCoreSubjects([]);
         } else {
-            const coreSubjects = await CoreSubject.findAll({ where: { name: teacherData.coreSubjects } });
+            const coreSubjects = await CoreSubjects.findAll({ where: { name: teacherData.coreSubjects } });
             const coreSubjects_ids = coreSubjects.map(c => c.id);
             await teacher.setCoreSubjects(coreSubjects_ids);
         }
@@ -110,7 +110,7 @@ const updateTeacher = async (id, teacherData) => {
         if (teacherData.subjects.length === 0) {
             await teacher.setSubjects([]);
         } else {
-            const subjects = await Subject.findAll({ where: { name: teacherData.subjects } });
+            const subjects = await Subjects.findAll({ where: { name: teacherData.subjects } });
             const subjects_ids = subjects.map(s => s.id);
             await teacher.setSubjects(subjects_ids);
         }

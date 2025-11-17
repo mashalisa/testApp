@@ -2,47 +2,93 @@ const studentTestController = require('../controllers/studentTestController')
 
 const express = require('express')
 
-const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher, isStudent } = require('../middleware/authMiddleware')
 const router = express.Router()
+const Joi = require('joi')
+const { validate, validateParams } = require('../middleware/validate')
 
-router.get('/test/:testId/students', 
-    authenticateToken, 
+const testStudentSchema = Joi.object({
+    status: Joi.string().valid('in_progress', 'completed', 'submitted').required(),
+    start_time: Joi.date().optional(),
+    end_time: Joi.date().optional(),
+});
+const testStudentUpdateSchema = Joi.object({
+    status: Joi.string().valid('in_progress', 'completed', 'submitted').optional(),
+    start_time: Joi.date().optional(),
+    end_time: Joi.date().when('status', {
+    is: 'submitted',
+    then: Joi.date().required(),
+    otherwise: Joi.date().optional(),
+  }),
+});
+   const testAndStudentParamSchema = Joi.object({
+       testId: Joi.string().uuid().required(),
+       studentId: Joi.string().uuid().required(),
+   });
+   
+const studetnIdParamsSchema = Joi.object({
+    studentId: Joi.string().uuid().required(),
+});
+const testIdParamsIdSchema = Joi.object({
+    testId: Joi.string().uuid().required(),
+});
+const paramsIdSchema = Joi.object({
+    testId: Joi.string().uuid().required(),
+});
+
+
+
+
+router.get('/test/:testId/students',
+    authenticateToken,
     isAdminTeacher,
+    validateParams(testIdParamsIdSchema),
     studentTestController.getAllStudentsByTestId)
 
-router.get('/students/:studentId/tests', 
-    authenticateToken, 
+router.get('/students/:studentId/tests',
+    authenticateToken,
     isAdminTeacher,
+    validateParams(studetnIdParamsSchema),
     studentTestController.getAllTestsByStudentId)
 
-router.get('/students/:studentId/my-test', 
-    authenticateToken, 
+router.get('/students/:studentId/my-test',
+    authenticateToken,
     isStudent,
+       validateParams(studetnIdParamsSchema),
     studentTestController.getAllTestsByCurrentStudentId)
 
-router.post('/test/:testId/students/:studentId', 
-    authenticateToken, 
+router.post('/test/:testId/students/:studentId',
+    authenticateToken,
     isAdminTeacher,
+       validateParams(testAndStudentParamSchema),
+          validate(testStudentSchema),
     studentTestController.createNewTestStudent)
 
-router.post('/test/:testId/students/:studentId/inProgress', 
-    authenticateToken, 
+router.post('/test/:testId/students/:studentId/inProgress',
+    authenticateToken,
     isStudent,
+      validateParams(testAndStudentParamSchema),
+          validate(testStudentSchema),
     studentTestController.createNewTestCurrentStudent)
 
-router.put('/test/:testId/students/:studentId', 
-    authenticateToken, 
+router.put('/test/:testId/students/:studentId',
+    authenticateToken,
     isAdminTeacher,
+      validateParams(testAndStudentParamSchema),
+          validate(testStudentUpdateSchema),
     studentTestController.updateTestStudent)
 
-router.put('/test/:testId/students/:studentId/end', 
-    authenticateToken, 
+router.put('/test/:testId/students/:studentId/end',
+    authenticateToken,
     isStudent,
+      validateParams(testAndStudentParamSchema),
+          validate(testStudentUpdateSchema),
     studentTestController.updateTestCurrentStudent)
 
-router.delete('/:id', 
-    authenticateToken, 
+router.delete('/:id',
+    authenticateToken,
     isAdminTeacher,
+     validateParams(paramsIdSchema),
     studentTestController.deleteStudentTest)
 
 module.exports = router

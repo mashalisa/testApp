@@ -2,7 +2,7 @@ const studentAnswerServices = require('../services/studentAnswerSevices')
 
 const checkAnswer = async (req, res) => {
     try {
-        const isCorrect = await studentAnswerServices.getCorrectAnswerByAnswerId(req.params.id)
+        const isCorrect = await studentAnswerServices.getCorrectAnswerByAnswerId(req.validatedParams.id)
 
         if (isCorrect) {
             res.status(200).json({
@@ -20,7 +20,7 @@ const checkAnswer = async (req, res) => {
 
 const assingStudentAnswerToTestByName = async(req, res) => {
     try {
-const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(req.params.testId,req.params.studentId, req.body)
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(req.validatedParams.testId,req.validatedParams.studentId, req.validatedBody)
 
             res.status(200).json({
                 success: true,
@@ -37,7 +37,7 @@ const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(r
 }
 const assingCurrentStudentAnswerToTestByName = async(req, res) => {
     try {
-         const { studentId, testId } = req.params;
+         const { studentId, testId } = req.validatedParams;
             const authenticatedUserId = req.user.id;
 
 
@@ -47,7 +47,7 @@ const assingCurrentStudentAnswerToTestByName = async(req, res) => {
         error: "Access denied — you can only view your own tests"
       });
     }
-const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(testId,studentId, req.body)
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(testId,studentId, req.validatedBody)
 
             res.status(200).json({
                 success: true,
@@ -64,7 +64,7 @@ const answers = await studentAnswerServices.assingStudentAnswerToTestWithNames(t
 }
 const assignStudentAnswerToTestByIds = async(req, res) => {
     try {
-const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(req.params.testId,req.params.studentId, req.body)
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(req.validatedParams.testId,req.validatedParams.studentId, req.validatedBody)
 
             res.status(200).json({
                   success: true,
@@ -81,7 +81,7 @@ const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(req
 }
 const assignCurrentStudentAnswerToTestByIds = async(req, res) => {
     try {
-        const { studentId, testId } = req.params;
+        const { studentId, testId } = req.validatedParams;
     const authenticatedUserId = req.user.id;
 
 
@@ -91,7 +91,7 @@ const assignCurrentStudentAnswerToTestByIds = async(req, res) => {
         error: "Access denied — you can only view your own tests"
       });
     }
-const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(testId,studentId, req.body)
+const answers = await studentAnswerServices.assingStudentAnswerToTestWithIds(testId,studentId, req.validatedBody)
 
             res.status(200).json({
                   success: true,

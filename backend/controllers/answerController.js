@@ -18,7 +18,7 @@ const answerController = {
     },
     async getAnswerById(req, res) {
         try {
-            const answer = await answerServices.getAnswerById(req.params.id);
+            const answer = await answerServices.getAnswerById(req.validatedParams.id);
             res.status(200).json({
                 success: true,
                 data: answer
@@ -33,7 +33,7 @@ const answerController = {
     },
         async getAnswerByQuestionId(req, res) {
         try {
-            const answers = await answerServices.getAnswersByQuestionId(req.params.questionId);
+            const answers = await answerServices.getAnswersByQuestionId(req.validatedParams.questionId);
             res.status(200).json({
                 success: true,
                 data: answers
@@ -48,7 +48,8 @@ const answerController = {
     },
     async createNewAnswer(req, res) {
         try {
-            const answer = await answerServices.createAnswer(req.params.questionId, req.body);
+          
+            const answer = await answerServices.createAnswer(req.validatedParams.questionId, req.validatedBody);
             res.status(201).json({
                 success: true,
                 data: answer
@@ -63,7 +64,8 @@ const answerController = {
     },
     async updateAnswer(req, res) {
         try {
-            const updatedAnswer = await answerServices.updateAnswerById(req.params.questionId, req.body);
+         
+            const updatedAnswer = await answerServices.updateAnswerById(req.validatedParams.questionId,  req.validatedBody);
             res.status(200).json({
                 success: true,
                 data: updatedAnswer
@@ -78,7 +80,7 @@ const answerController = {
     },
     async deleteAnswer(req, res) {
         try {
-            const deletedAnswer = await answerServices.deleteAnswerById(req.params.id);
+            const deletedAnswer = await answerServices.deleteAnswerById(req.validatedParams.id);
             res.status(200).json({
                 success: true,
                 data: deletedAnswer

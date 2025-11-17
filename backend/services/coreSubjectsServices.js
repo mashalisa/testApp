@@ -20,12 +20,8 @@ const getCoreSubjectById = async (id) => {
 }
 
 const getCoreSubjectByName = async (name) => {
-    if (!name || typeof name !== 'string' || !name.trim()) {
-        throw new Error('Invalid core subject name');
-    }
-
     const coreSubject = await CoreSubjects.findOne({
-        where: { name: name.trim() },
+        where: { name },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
     if (!coreSubject) {
@@ -34,15 +30,6 @@ const getCoreSubjectByName = async (name) => {
     return coreSubject
 }
 const createNewCoreSubject = async (name, gradeId) => {
-
-
-
-    if (!name || typeof name !== 'string' || !name.trim() ) {
-        throw new Error('Invalid core subject name');
-    }
-    if(!gradeId) {
-        throw new Error('Missing grade id');
-    }
     const grade = await Grade.findByPk(gradeId)
     if (!grade) {
         throw new Error('grade not found');
@@ -53,36 +40,29 @@ const createNewCoreSubject = async (name, gradeId) => {
         throw new Error('this core Subject already exists');
     }
 
-     const coreSubject = await CoreSubjects.create({ name: name.trim(), grade_id: gradeId });
+    const coreSubject = await CoreSubjects.create({ name: name.trim(), grade_id: gradeId });
 
     return coreSubject
 }
 
-const updateCoreSubject = async (id,  name, gradeId) => {
-     
+const updateCoreSubject = async (id, name, gradeId) => {
+
     const coreSubject = await CoreSubjects.findByPk(id)
-    if (!coreSubject) {
-        throw new Error('Core Subject not found');
+
+  
+    if (gradeId) {
+        const grade = await Grade.findByPk(gradeId)
+         if (!grade) throw new Error('Invalid grade ID');
     }
-    if(!gradeId) {
-        throw new Error('Missing grade id');
-    }
-     const grade = await Grade.findByPk(gradeId)
-    if (!grade) {
-        throw new Error('grade not found');
-    }
-     if (!name || typeof name !== 'string' || !name.trim() ) {
-        throw new Error('Invalid core subject name');
-    }
-    if (coreSubject.name !== name.trim()) {
-        const exisingCoreSubject = await CoreSubjects.findOne({ where: { name: name.trim(), grade_id: gradeId } });
+    
+        const exisingCoreSubject = await CoreSubjects.findOne({ where: { name: name ?? coreSubject.name, grade_id: gradeId ?? coreSubject.grade_id } });
         if (exisingCoreSubject) {
             throw new Error('A core Subject with this name already exists');
         }
-    }
+   
 
-    coreSubject.name = name.trim();
-      coreSubject.grade_id = gradeId;
+    coreSubject.name = name ?? coreSubject.name
+    coreSubject.grade_id = gradeId ?? coreSubject.grade_id
     const updatedCoreSubject = await coreSubject.save()
     return updatedCoreSubject
 }

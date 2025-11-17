@@ -4,7 +4,7 @@ const gradeServices = require('../services/gradesServices')
 const gradeController = {
     async createGrade(req, res) {
         try {
-            const { name } = req.body;
+            const { name } = req.validatedBody;
             if (!name || typeof name !== 'string') {
                 return res.status(400).json({ error: 'Invalid grade name' });
             }
@@ -27,7 +27,7 @@ const gradeController = {
 
     async getGradeByID(req, res) {
         try {
-            const grade = await gradeServices.getGradeById(req.params.id)
+            const grade = await gradeServices.getGradeById(req.validatedParams.id)
             res.status(200).json(grade)
         } catch (error) {
             res.status(404).json({ error: error.message }) //404 Not Found
@@ -36,7 +36,7 @@ const gradeController = {
     },
     async getGradeByName(req, res) {
         try {
-              const { name } = req.query;
+              const { name } = req.validatedQuery;
             if (!name || typeof name !== 'string') {
                 return res.status(400).json({ error: 'Invalid grade name' });
             }
@@ -50,11 +50,11 @@ const gradeController = {
     },
     async updateGrade(req, res) {
         try {
-               const { name } = req.body;
+               const { name } = req.validatedBody;
             if (!name || typeof name !== 'string') {
                 return res.status(400).json({ error: 'Invalid grade name' });
             }
-            const updatedGrade = await gradeServices.updateGrade(req.params.id, name)
+            const updatedGrade = await gradeServices.updateGrade(req.validatedParams.id, name)
             res.status(200).json(updatedGrade);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -62,7 +62,7 @@ const gradeController = {
     },
     async deleteGrade(req, res) {
         try {
-            const grade = await gradeServices.deleteGrade(req.params.id)
+            const grade = await gradeServices.deleteGrade(req.validatedParams.id)
             res.status(200).json(grade)
         } catch (error) {
             res.status(404).json({ error: error.message })

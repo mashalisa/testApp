@@ -3,7 +3,7 @@ const authServices = require('../services/authServices')
 const authController = {
     async registerUser(req, res, allowedRole) {
         try {
-            const user = await authServices.registerUser(req.body, allowedRole)
+            const user = await authServices.registerUser(req.validatedBody, allowedRole)
             res.status(201).json({
                 success: true,
                 data: user
@@ -19,7 +19,7 @@ const authController = {
         async login(req, res, allowedRoles) {
         try {
             // console.log(allowedRoles,'allowedRoles')
-            const user = await authServices.loginUser(req.body, allowedRoles)
+            const user = await authServices.loginUser(req.validatedBody, allowedRoles)
             res.status(200).json({
                 success: true,
                 data: user

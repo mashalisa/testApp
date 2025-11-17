@@ -33,11 +33,6 @@ const getAllStudentsByTestId = async (testId) => {
 }
 
 const createNewTestByStudent = async (testId, studentId, studentTestData) => {
-    console.log(testId, 'testId')
-    console.log(studentId, 'studentId')
-    if (!testId || !studentId) {
-        throw new Error('Missing testId or studentId');
-    }
     const test = await Test.findByPk(testId)
     if (!test) throw new Error('Test not found');
 
@@ -70,9 +65,7 @@ const createNewTestByStudent = async (testId, studentId, studentTestData) => {
 }
 
 const updateStudentTest = async (testId, studentId, studentTestData) => {
-    if (!testId  || !studentId) {
-        throw new Error('Missing data');
-    }
+
     const { end_time, status } = studentTestData
     const entry = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } });
     if (!entry) throw new Error('Student test entry not found');

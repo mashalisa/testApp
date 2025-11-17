@@ -20,9 +20,6 @@ const getAllScoresByTestId = async (id) => {
 
 const createScoreByTestIDByStudentID = async (test_id, student_id) => {
 
-  if (!test_id || !student_id) {
-    throw new Error('missing data')
-  }
   const questions = await Question.findAll({ where: { test_id }, attributes: ['id'] })
 
   if (!questions) {
@@ -36,7 +33,7 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
       where: { user_id: student_id, test_id }
     })
     if(!studentTest) {
-         throw new Error('student and test are not exists')
+         throw new Error('Student test entry not found')
     }
   for (const question of questions) {
     const studentAnswer = await StudentAnswer.findOne({
@@ -68,9 +65,6 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
 }
 
 const createStudentScore = async (data) => {
-  if (!data.student_id || !data.test_id || data.score == null) {
-    throw new Error('Missing data')
-  }
 
   const existingScore = await StudentScore.findOne({
     where: { student_id: data.student_id, test_id: data.test_id },
