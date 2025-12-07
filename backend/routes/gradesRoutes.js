@@ -12,13 +12,18 @@ const Joi = require('joi')
 const { validate, validateParams, validateQuery } = require('../middleware/validate')
 
 const gradeSchema = Joi.object({
-    name: Joi.string().trim().min(1).required(),
+    name: Joi.string().trim().min(1).required()
 });
-
+const gradeTeacherSchema = Joi.object({
+    gradesData: Joi.array().items(Joi.string()).required()
+});
 const gradeParamSchema = Joi.object({
     id: Joi.string().uuid().required(),
+    teacherId: Joi.string().uuid().required(),
 });
-
+const gradeTeacherParamSchema = Joi.object({
+    teacherId: Joi.string().uuid().required(),
+});
 const gradeQuerySchema = Joi.object({
     name: Joi.string().trim().min(1).required(),
 });
@@ -53,7 +58,12 @@ router.delete('/:id',
     isAdminTeacher,
     validateParams(gradeParamSchema),
     gradesController.deleteGrade)
-
+router.put('/teacher/:teacherId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(gradeTeacherParamSchema),
+     validate(gradeTeacherSchema),
+    gradesController.assignGradesToTeacher)
 module.exports = router;
 
 /**
@@ -213,4 +223,50 @@ module.exports = router;
  *               $ref: '#/components/schemas/Grade'
  *       404:
  *         description: Grade not found
+ */
+
+/**
+ * @swagger
+ * /api/grades/teacher/{teacherId}:
+ *   put:
+ *     summary: Assign grades to a teacher
+ *     tags: [Grades]
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The teacher's UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - gradesData
+ *             properties:
+ *               gradesData:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of grade IDs to assign
+ *     responses:
+ *       200:
+ *         description: Grades assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Teacher or grade not found
  */

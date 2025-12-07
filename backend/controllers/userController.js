@@ -19,6 +19,14 @@ const userController = {
             res.status(500).json({error: error.message}) //Internal Server Error
         }
     },
+     async getAllStudnets(req, res) {
+        try {
+            const students = await userService.getAllStudents();
+            res.status(200).json(students);
+        } catch(error) {
+            res.status(500).json({error: error.message}) //Internal Server Error
+        }
+    },
 
     async getUserById(req, res) {
         try {

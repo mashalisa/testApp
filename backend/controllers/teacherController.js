@@ -87,6 +87,17 @@ const teacherController = {
         }catch(error) {
               res.status(400).json({ success: false, message: error.message });
         }
+    },
+    async getAllStudentsByTeacher(req, res) {
+        try {
+              const students =  await teacherServices.getAllStudentsByTeacher(req.validatedParams.id) 
+        res.status(200).json({
+                success: true,
+                data: students,
+            });
+        }catch(error) {
+              res.status(400).json({ success: false, message: error.message });
+        }
     }
 
 }

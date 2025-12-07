@@ -35,6 +35,7 @@ const registerUser = async (userData, allowedRole) => {
     }
 }
 const loginUser = async (userData, allowedRoles) => {
+    console.log(userData, 'userData')
   
     const { username, password } = userData;
    

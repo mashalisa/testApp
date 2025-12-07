@@ -8,7 +8,14 @@ const getAllUsers = (async() => {
     })
     return users
 })
+const getAllStudents = async () => {
+    const users = await User.findAll({
+        where: { role: 'student' },
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt'] }
+    });
 
+    return users;
+};
 const getUserById = async(id) => {
     const user = await User.findByPk(id, {
         attributes: {exclude: ['password', 'createdAt', 'updatedAt'] }
@@ -71,5 +78,6 @@ module.exports = {
     updateUser,
     createUser,
     getUserById,
-    getAllUsers
+    getAllUsers,
+    getAllStudents
 }

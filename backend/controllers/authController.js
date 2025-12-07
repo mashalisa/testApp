@@ -18,7 +18,7 @@ const authController = {
     },
         async login(req, res, allowedRoles) {
         try {
-            // console.log(allowedRoles,'allowedRoles')
+            console.log(req,'req')
             const user = await authServices.loginUser(req.validatedBody, allowedRoles)
             res.status(200).json({
                 success: true,

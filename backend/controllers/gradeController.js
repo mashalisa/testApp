@@ -1,4 +1,5 @@
-const gradeServices = require('../services/gradesServices')
+const gradeServices = require('../services/gradesServices');
+const { assignGradesToTeacher } = require('./teacherController');
 
 
 const gradeController = {
@@ -64,6 +65,20 @@ const gradeController = {
         try {
             const grade = await gradeServices.deleteGrade(req.validatedParams.id)
             res.status(200).json(grade)
+        } catch (error) {
+            res.status(404).json({ error: error.message })
+        }
+
+    },
+     async assignGradesToTeacher(req, res) {
+        try {
+            const { gradesData } = req.validatedBody;
+            const teacherId = req.validatedParams.teacherId; 
+            const grades = await gradeServices.assignGradesToTeacher(teacherId, gradesData)
+           res.status(200).json({ 
+            success: true, 
+            message: 'Grades assigned successfully' 
+        });
         } catch (error) {
             res.status(404).json({ error: error.message })
         }

@@ -30,6 +30,11 @@ router.get('/:id',
     isAdminTeacher,
     validateParams(teacherParamsIdSchema),
     teacherController.getTeacherById)
+    router.get('/:id/students', 
+    authenticateToken, 
+    isAdminTeacher,
+    validateParams(teacherParamsIdSchema),
+    teacherController.getAllStudentsByTeacher)
 router.put('/:id', 
     authenticateToken, 
     isAdminTeacher,
@@ -317,4 +322,30 @@ module.exports = router;
  *                     $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
+ */
+
+/**
+ * @swagger
+ * /api/teachers/{id}/students:
+ *   get:
+ *     summary: Get a studnts by teacher by ID
+ *     tags: [Teachers]
+ *     operationId: getTeacherById
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The Teacher ID
+ *     responses:
+ *       200:
+ *         description: The Teacher data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserTeacherView'
+ *       404:
+ *         description: Teacher not found
  */

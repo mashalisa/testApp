@@ -26,6 +26,13 @@ const questionQuerySchema = Joi.object({
 const questionParamsIdSchema = Joi.object({
     id: Joi.string().uuid().required(),
 });
+const teacherParamsIdSchema = Joi.object({
+    teacherId: Joi.string().uuid().required(),
+});
+
+const teacherSubjectSchema = Joi.object({
+    subjectsData: Joi.array().items(Joi.string()).required()
+});
 
 
 
@@ -57,7 +64,12 @@ router.delete('/:id',
     isAdminTeacher,
     validateParams(questionParamsIdSchema),
     subjectController.deleteSubject)
-
+router.put('/teacher/:teacherId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(teacherParamsIdSchema),
+     validate(teacherSubjectSchema),
+    subjectController.assignSubjectsToTeacher)
 module.exports = router;
 
 /**
@@ -252,4 +264,50 @@ module.exports = router;
  *               $ref: '#/components/schemas/Subject'
  *       404:
  *         description:  Subject not found
+ */
+
+/**
+ * @swagger
+ * /api/subjects/teacher/{teacherId}:
+ *   put:
+ *     summary: Assign  Subjects to a teacher
+ *     tags: [Subject]
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The teacher's UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - subjectsData
+ *             properties:
+ *               subjectsData:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of Subject IDs to assign
+ *     responses:
+ *       200:
+ *         description: Subject assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Teacher or core Subjects not found
  */

@@ -42,10 +42,11 @@ const isAdmin = (req, res, next) => {
     
 }
 const isTeacher = (req, res, next) => {
-     if (!req.body) {
+    console.log(req, 'req')
+     if (!req.user) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
-  if (req.body.role !== 'teacher') {
+  if (req.user.role !== 'teacher') {
     return res.status(403).json({ error: 'Teacher access required' });
   }
     next()

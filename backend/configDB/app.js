@@ -4,7 +4,7 @@
 
 const { sequelize } = require('./sequelize')
 const express = require('express')
-
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 
@@ -26,6 +26,11 @@ require('dotenv').config()
 
 
 const app = express()
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json())
 
 const swaggerUiOptions = {

@@ -3,6 +3,9 @@
 const { sequelize } = require('./configDB/sequelize')
 const app = require('./configDB/app')
 
+
+
+
 const startedService = async () => {
   try {
     await sequelize.authenticate() //checking connction

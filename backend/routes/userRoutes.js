@@ -43,14 +43,19 @@ const paramIdSchema = Joi.object({
 
 
 const router = express.Router();
-const {authenticateToken, isAdmin} = require('../middleware/authMiddleware')
+const {authenticateToken, isAdmin, isTeacher} = require('../middleware/authMiddleware')
 router.get('/', authenticateToken, isAdmin,
     userController.getAllUsers)
+
+    router.get('/students', authenticateToken, isTeacher,
+    userController.getAllStudnets)
+
 router.get('/:id', 
     authenticateToken,
      isAdmin,
      validateParams(paramIdSchema),
     userController.getUserById)
+    
 router.post('/', 
     authenticateToken, 
     isAdmin,
@@ -227,3 +232,20 @@ module.exports = router;
  *       404:
  *         description: User not found
  */
+
+/**
+ * @swagger
+ * /api/users/students:
+ *   get:
+ *     summary: Returns all students
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: The list of students
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * */

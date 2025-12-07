@@ -86,13 +86,13 @@ const updateTeacher = async (id, teacherData) => {
 
 
 
-    if (teacherData.grades) { 
+    if (teacherData.grades) {
         if (teacherData.grades.length === 0) {
-            await teacher.setGrades([]); 
+            await teacher.setGrades([]);
         } else {
             const grade = await Grade.findAll({ where: { name: teacherData.grades } });
             const grade_ids = grade.map(g => g.id);
-            await teacher.setGrades(grade_ids); 
+            await teacher.setGrades(grade_ids);
         }
     }
 
@@ -143,7 +143,8 @@ const assignStudentsToTeacher = async (teacherId, studentsData) => {
     }
 
     //  await teacher.addStudents(existingStudents.map(s => s.id));
-    await teacher.addStudents(students_ids);
+    // await teacher.addStudents(students_ids);
+    await teacher.setStudents(students_ids);
     return await teacher.getStudents();
 }
 
@@ -171,12 +172,25 @@ const removeAssignStudentFromTeacher = async (teacherId, studentsData) => {
     return await teacher.getStudents();
 };
 
+const getAllStudentsByTeacher = async (id) => {
+    console.log(id, 'teacherId')
+    const teacher = await User.findByPk(id, {
+        include: [{
+            model: User,
+            as: 'students'
+        }]
+    })
+    if (!teacher) throw new Error('Teacher not found');
+
+    return teacher.students;
+}
 module.exports = {
     getAllTeachers,
     getTeacherById,
     updateTeacher,
     assignStudentsToTeacher,
     removeAssignStudentFromTeacher,
-    assignGradesToTeacher
+    assignGradesToTeacher,
+    getAllStudentsByTeacher
 }
 

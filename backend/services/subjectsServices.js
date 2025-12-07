@@ -1,5 +1,5 @@
 
-const { Grade, CoreSubjects, Subjects } = require('../configDB/models');
+const { Grade, CoreSubjects, Subjects, User } = require('../configDB/models');
 
 
 const getAllSubjects = async () => {
@@ -29,7 +29,7 @@ const getSubjectByName = async (name) => {
     }
     return subjects
 }
-const createNewSubject = async ( name, gradeId, coreSubjectId) => {
+const createNewSubject = async (name, gradeId, coreSubjectId) => {
 
     const grade = await Grade.findByPk(gradeId)
     if (!grade) {
@@ -60,19 +60,19 @@ const createNewSubject = async ( name, gradeId, coreSubjectId) => {
 const updateSubject = async (id, name, gradeId, coreSubjectId) => {
 
     if (gradeId) {
-         const grade = await Grade.findByPk(gradeId)
-    if (!grade) {
-        throw new Error('Grade not found');
-    }
+        const grade = await Grade.findByPk(gradeId)
+        if (!grade) {
+            throw new Error('Grade not found');
+        }
     }
     if (coreSubjectId) {
-    const coreSubject = await CoreSubjects.findByPk(coreSubjectId)
-    if (!coreSubject) {
-        throw new Error('Core subject not found');
-    }
-    if (coreSubject.grade_id !== gradeId) {
-        throw new Error('Core subject does not belong to the provided grade');
-    }
+        const coreSubject = await CoreSubjects.findByPk(coreSubjectId)
+        if (!coreSubject) {
+            throw new Error('Core subject not found');
+        }
+        if (coreSubject.grade_id !== gradeId) {
+            throw new Error('Core subject does not belong to the provided grade');
+        }
     }
 
     const subjects = await Subjects.findByPk(id)
@@ -80,13 +80,13 @@ const updateSubject = async (id, name, gradeId, coreSubjectId) => {
         throw new Error('Subject not found');
     }
 
-        const existingSubject = await Subjects.findOne({ where: { name, grade_id: gradeId, coreSubject_id: coreSubjectId } });
-        if (existingSubject) {
-            throw new Error('A subject with this name already exists');
-      
+    const existingSubject = await Subjects.findOne({ where: { name, grade_id: gradeId, coreSubject_id: coreSubjectId } });
+    if (existingSubject) {
+        throw new Error('A subject with this name already exists');
+
     }
 
-    subjects.name = name ?? subjects.name ;
+    subjects.name = name ?? subjects.name;
     subjects.grade_id = gradeId ?? subjects.grade_id;
     subjects.coreSubject_id = coreSubjectId ?? subjects.coreSubject_id;
     const updatedSubject = await subjects.save()
@@ -101,7 +101,28 @@ const deleteSubject = async (id) => {
     await subjects.destroy()
     return { message: 'This subject deleted successfully' };
 }
+const assignSubjectsToTeacher = async (teacherId, subjects) => {
 
+    const teacher = await User.findByPk(teacherId)
+    if (!teacher) {
+        throw new Error('teacher not found')
+    }
+    const subjectsData = await Subjects.findAll({ where: { id: subjects } })
+
+console.log(subjectsData, 'subjectsData')
+    if (subjectsData.length !== subjects.length) {
+        throw new Error("One or more subjects not found");
+    }
+         
+    await teacher.setSubjects(subjects)
+    return { message: "subjects assigned successfully" };
+}
 module.exports = {
-    deleteSubject, updateSubject, createNewSubject, getSubjectByName, getSubjectById, getAllSubjects
+    deleteSubject,
+    updateSubject,
+    createNewSubject,
+    getSubjectByName,
+    getSubjectById,
+    getAllSubjects,
+    assignSubjectsToTeacher
 }

@@ -6,7 +6,7 @@ const express = require('express')
 
 const router = express.Router();
 const Joi = require('joi')
-const {validate, validateQuery, validateParams} = require('../middleware/validate')
+const { validate, validateQuery, validateParams } = require('../middleware/validate')
 
 const coreSubject = Joi.object({
     name: Joi.string().trim().min(1).required(),
@@ -20,19 +20,24 @@ const coreSubjectParamSchema = Joi.object({
     id: Joi.string().uuid().required(),
 });
 
-
-router.get('/by-name', 
-    authenticateToken, 
+const coreSubjectsTeacherSchema = Joi.object({
+    coreSubjectsData: Joi.array().items(Joi.string()).required()
+});
+const coreSubjectsTeacherParamSchema = Joi.object({
+    teacherId: Joi.string().uuid().required(),
+});
+router.get('/by-name',
+    authenticateToken,
     isAdminTeacher,
     validateQuery(coreSubjectNameSchema),
     coreSubjectController.getCoreSubjectByName)
 
 router.get('/', authenticateToken, isAdminTeacher,
     coreSubjectController.getAllCoreSubject)
-router.get('/:id', 
+router.get('/:id',
     authenticateToken,
-     isAdminTeacher,
-     validateParams(coreSubjectParamSchema),
+    isAdminTeacher,
+    validateParams(coreSubjectParamSchema),
     coreSubjectController.getCoreSubjectByID)
 
 router.post('/',
@@ -40,17 +45,29 @@ router.post('/',
     isAdminTeacher,
     validate(coreSubject),
     coreSubjectController.createCoreSubject)
+
+router.put('/teacher/:teacherId',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(coreSubjectsTeacherParamSchema),
+    validate(coreSubjectsTeacherSchema),
+    coreSubjectController.assignCoreSubjectsToTeacher)
 router.put('/:id',
     authenticateToken,
     isAdminTeacher,
     validate(coreSubject),
     validateParams(coreSubjectParamSchema),
     coreSubjectController.updateCoreSubject)
-router.delete('/:id', 
-    authenticateToken, 
+router.delete('/:id',
+    authenticateToken,
     isAdminTeacher,
     validateParams(coreSubjectParamSchema),
     coreSubjectController.deleteCoreSubject)
+
+
+
+
+module.exports = router;
 
 module.exports = router;
 
@@ -236,4 +253,50 @@ module.exports = router;
  *               $ref: '#/components/schemas/CoreSubject'
  *       404:
  *         description: Core Subject not found
+ */
+
+/**
+ * @swagger
+ * /api/coreSubjects/teacher/{teacherId}:
+ *   put:
+ *     summary: Assign core Subjects to a teacher
+ *     tags: [CoreSubject]
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The teacher's UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - coreSubjectsData
+ *             properties:
+ *               coreSubjectsData:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of grade IDs to assign
+ *     responses:
+ *       200:
+ *         description: core ubjects assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Teacher or core Subjects not found
  */

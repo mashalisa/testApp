@@ -44,7 +44,7 @@ router.post('/students/signup',  validate(studentSignupSchema),(req, res) => {
 router.post('/teachers/login', validate(loginSchema),(req, res) => {
     authController.login(req, res, ['admin', 'teacher'])
 })
-router.post('/students/login',  validate(loginSchema), (req, res) => {
+router.post('/login',  validate(loginSchema), (req, res) => {
     authController.login(req, res, ['student', 'admin', 'teacher'])
 })
 
@@ -160,7 +160,7 @@ module.exports = router
 
 /**
  * @swagger
- * /autorization/students/login:
+ * /autorization/login:
  *   post:
  *     summary: Log in an existing user
  *     description: Authenticates user and returns a JWT token.
