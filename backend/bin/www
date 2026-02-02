@@ -1,0 +1,37 @@
+
+
+const { sequelize } = require('../config/sequelize')
+const app = require('../config/app')
+
+
+
+
+const startedService = async () => {
+  try {
+    await sequelize.authenticate() //checking connction
+    console.log('✅ Connection has been established successfully.');
+
+    // await sequelize.sync({ alter: true, logging: false });
+    // await sequelize.sync({ force: true, logging: false });
+    await sequelize.sync();
+    console.log('✅ All tables including join tables are created!');
+
+
+    console.log('✅ Call models synced successfuly ');
+
+    const PORT = 3000
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`)
+      console.log(`Swagger docs at http://localhost:${PORT}/api-docs`);
+    })
+  } catch (error) {
+    console.log('unable to start sterver', error)
+  }
+}
+
+
+if (process.env.NODE_ENV !== 'test') {
+  startedService();
+
+}
+

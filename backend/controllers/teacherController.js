@@ -38,6 +38,17 @@ const teacherController = {
             res.status(404).json({ success: false, message: error.message });
         }
     },
+      async getTeacherNameById(req, res) {
+        try {
+            const teacher = await teacherServices.getTeacherNameById(req.validatedParams.id)
+            res.status(200).json({
+                success: true,
+                data: teacher,
+            });
+        } catch (error) {
+            res.status(404).json({ success: false, message: error.message });
+        }
+    },
     async updateTeacherById(req, res) {
         try {
             const updatedTeacher = await teacherServices.updateTeacher(req.validatedParams.id, req.validatedBody)

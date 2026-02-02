@@ -1,4 +1,4 @@
-const { Question, Test } = require('../configDB/models')
+const { Question, Test } = require('../models')
 
 
 const getAllQustions = async () => {

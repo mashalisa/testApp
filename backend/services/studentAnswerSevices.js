@@ -1,4 +1,4 @@
-const { StudentAnswer, Answer, StudentTest, Question } = require('../configDB/models')
+const { StudentAnswer, Answer, StudentTest, Question } = require('../models')
 
 
 
@@ -23,7 +23,7 @@ const getCorrectAnswerByAnswerId = async (studentAnswerId) => {
 module.exports = { getCorrectAnswerByAnswerId };
 
 const assingStudentAnswerToTestWithNames = async (testId, studentId, answersArray) => {
- 
+
     const studentTest = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } })
 
     if (!studentTest) {
@@ -62,9 +62,8 @@ const assingStudentAnswerToTestWithNames = async (testId, studentId, answersArra
 }
 
 const assingStudentAnswerToTestWithIds = async (testId, studentId, answersArray) => {
-console.log(testId, 'testId')
-console.log(studentId, 'studentId')
-console.log(answersArray, 'answersArray')
+
+    console.log(answersArray, 'answersArray')
 
     const studentTest = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } })
 
@@ -79,24 +78,41 @@ console.log(answersArray, 'answersArray')
     const createdAnswers = [];
     console.log(answersArray, 'answersArray')
     for (const answerItem of answersArray) {
-        if (!answerItem.answer || !answerItem.question) {
+        const { question, answer } = answerItem;
+        console.log(question, 'question')
+        if (!answer || !question) {
             throw new Error('Each answer item must include question and answer');
         }
-        const answer = await Answer.findByPk(answerItem.answer);
-        const question = await Question.findByPk(answerItem.question);
 
+        const questionRecord = await Question.findByPk(question);
+        console.log(questionRecord, 'questionRecord')
 
-        if (!answer || !question) {
-            throw new Error('Question or answer not found');
+         if (!questionRecord) {
+            throw new Error(`Question not found: ${question}`);
         }
-
-        const studentAnswer = await StudentAnswer.create({
+        for (const answerId of answer) {
+            
+            const answerRecord = await Answer.findByPk(answerId);
+            if (!answerRecord) {
+                throw new Error(`Answer not found: ${answerId}`);
+            }
+            console.log(studentTest.id, 'studentTest.id')
+            console.log(answerRecord.id, 'answerRecord.id')
+             console.log(questionRecord.id, 'questionRecord.id')
+              const studentAnswer = await StudentAnswer.create({
             studentTest_id: studentTest.id,
-            chosenAnswer_id: answer.id,
-            question_id: question.id,
+            chosenAnswer_id: answerRecord.id,
+            question_id: questionRecord.id,
         });
 
         createdAnswers.push(studentAnswer);
+        }
+        
+
+
+       
+
+      
 
     }
 

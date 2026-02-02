@@ -78,6 +78,22 @@ const answerController = {
         }
 
     },
+        async updateAnswerById(req, res) {
+        try {
+         
+            const updatedAnswer = await answerServices.updateAnswerByAnswerId(req.validatedParams.id,  req.validatedBody);
+            res.status(200).json({
+                success: true,
+                data: updatedAnswer
+            })
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: error.message
+            })
+        }
+
+    },
     async deleteAnswer(req, res) {
         try {
             const deletedAnswer = await answerServices.deleteAnswerById(req.validatedParams.id);

@@ -1,33 +1,27 @@
-import Title from "../basic/Title"
-import SubTitle from "../basic/SubTitle"
+
 import { useEffect, useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { getCoreSubjects, getProfileInfoByTeacher, updateCoreSubjects } from "../../api/manageProfile"
-import Submit from '../form/Submit'
 import { Link } from "react-router-dom"
-import type { NameResponse } from "../../types"
+import type { NameResponse, UpdateResponse } from "../../types"
+import useApi from "../../hooks/useApi"
+import HeaderSteps from "./headerSteps"
+import Card from "../basic/Card"
+import StepSelector from "./StepSelector"
 
 const CoreSubjects = () => {
 
     const { token, user } = useAuth()
-    const [coreSubjects, setCoreSubjects] = useState<NameResponse[]>([])
     const [coreSubjectsSelected, setCoreSubjectsSelected] = useState<string[]>([])
     const [teacherCoreSubjects, setteacherCoreSubjects] = useState<NameResponse[]>([])
+    const { data: coreSubjects, execute: loadCoreSubjects, isLoading } = useApi(getCoreSubjects)
+    const { execute: executeUpdateCoreSubjects, isLoading: isUpdatedLoading } =
+        useApi<UpdateResponse, [token: string, userId: string, { coreSubjectsData: string[] }]>(updateCoreSubjects)
 
     useEffect(() => {
         if (!token || !user) return
-        const loadCoreSubjects = async () => {
-            try {
-                const data = await getCoreSubjects(token)
-                setCoreSubjects(data)
-                console.log(data)
-            } catch (err) {
-                console.error(err)
-            }
 
-
-        }
-        loadCoreSubjects()
+        loadCoreSubjects(token)
         displayTeacherCoreSubjects()
     }, [token])
 
@@ -39,23 +33,18 @@ const CoreSubjects = () => {
         )
     }
     const handleUpdateCoreSubjects = async () => {
-        
+
         console.log('coreSubjectsSelected', coreSubjectsSelected)
         if (!token || !user) {
             console.error("Missing token or user")
             return
         }
-        const coreSubjectTeacherData = { coreSubjectsData: coreSubjectsSelected };
-        try {
-            const assignedGradesToTeacher = await updateCoreSubjects(token, user.id, coreSubjectTeacherData)
-            console.log(assignedGradesToTeacher)
-            setCoreSubjectsSelected([])
-            displayTeacherCoreSubjects()
-        } catch (err) {
-            console.error(err)
-        }
+
+        const response = await executeUpdateCoreSubjects(token, user.id, { coreSubjectsData: coreSubjectsSelected })
+        setCoreSubjectsSelected([])
+        displayTeacherCoreSubjects()
     }
-        const displayTeacherCoreSubjects = async () => {
+    const displayTeacherCoreSubjects = async () => {
         if (!token || !user) return
         try {
             const data = await getProfileInfoByTeacher(token, user.id)
@@ -70,23 +59,30 @@ const CoreSubjects = () => {
     }
     return (
         <>
-         
-                <Title name='Create your profile' />
-                <SubTitle name='choose your core subjects' />
-                <div>
-                    {coreSubjects && coreSubjects.map((coreSubect) => (
-                        <div className= {coreSubjectsSelected.includes(coreSubect.id)? 'selected' : 'unselected'} onClick={() => selectCoreSubjects(coreSubect.id)} key={coreSubect.id}>{coreSubect.name}</div>
-                    ))}
-                </div>
-                <Submit name="set your grades" onClick={handleUpdateCoreSubjects} />
-                 <SubTitle name="your core Subjects" />
-                <div className="list">
-                {teacherCoreSubjects && teacherCoreSubjects.map((coresubjects) => (
-                    <div key={coresubjects.id}  >{coresubjects.name}</div>
-                ))}
+            <HeaderSteps activeStep='core-subjects' />
+
+            <Card className="m-auto" width="col-md-8 col-lg-8">
+                <StepSelector
+                    title="Choose your core subject"
+                    description="Select one or more core subjects you teach"
+                    availableTitle="available core subject"
+                    items={coreSubjects ?? []}
+                    selectedIds={coreSubjectsSelected}
+                    onSelect={selectCoreSubjects}
+                    onSubmit={handleUpdateCoreSubjects}
+                    isLoading={isLoading}
+                    teacherItems={teacherCoreSubjects}
+                    name='core subject'
+                />
+
+            </Card>
+
+
+            <div className="text-center mt-3">
+                <Link to='/subjects' className="   color-white">create your subjects</Link>
             </div>
-                 <Link to='/subjects' >create your subjects</Link>
-       
+
+
 
         </>
 

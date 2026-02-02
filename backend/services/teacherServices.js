@@ -1,4 +1,4 @@
-const { Grade, CoreSubjects, Subjects, User } = require('../configDB/models')
+const { Grade, CoreSubjects, Subjects, User, Test } = require('../models')
 
 
 const getAllTeachers = async () => {
@@ -33,6 +33,12 @@ const getTeacherById = async (id) => {
                 attributes: ['id', 'name'],
                 through: { attributes: [] }
             },
+            {
+                model: Test,
+                as: 'tests',
+                attributes: ['id', 'name']
+
+            },
         ],
     });
     if (!teacher) {
@@ -41,7 +47,29 @@ const getTeacherById = async (id) => {
 
     return teacher
 }
+const getTeacherNameById = async (id) => {
+    const teacher = await User.findOne({
+        where: { id, role: 'teacher' },
+        attributes: {
+            exclude: [
+                'username',
+                'role',
+                'password',
+                'phoneNumber',
+                'address',
+                'birthDate',
+                'profilePicture',
+                'createdAt',
+                'updatedAt'
+            ]
+        }
+    });
+    if (!teacher) {
+        throw new Error('Teacher not found');
+    }
 
+    return teacher
+}
 const assignGradesToTeacher = async (id, data) => {
     const { grades, coreSubjects, subjects } = data;
     const teacher = await User.findOne({ where: { id, role: 'teacher' } });
@@ -191,6 +219,7 @@ module.exports = {
     assignStudentsToTeacher,
     removeAssignStudentFromTeacher,
     assignGradesToTeacher,
-    getAllStudentsByTeacher
+    getAllStudentsByTeacher,
+    getTeacherNameById
 }
 

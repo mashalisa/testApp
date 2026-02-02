@@ -1,4 +1,4 @@
-const { Test, User, Grade, CoreSubjects, Subjects, Question, Answer } = require('../configDB/models')
+const { Test, User, Grade, CoreSubjects, Subjects, Question, Answer } = require('../models')
 
 const getAllTest = async () => {
     const tests = await Test.findAll()
@@ -20,7 +20,9 @@ const getTestById = async (id) => {
 }
 
 const updateTestById = async (id, testData) => {
-    const { name, coreSubject_id, subject_id, grade_id, text_URL } = testData
+    const { name, coreSubject_id, subject_id, grade_id, test_URL } = testData
+
+    console.log(test_URL, 'text_URL')
 
 
     const test = await Test.findByPk(id)
@@ -28,33 +30,35 @@ const updateTestById = async (id, testData) => {
         throw new Error('a test not found')
     }
 
-   if (grade_id) {
-    const grade = await Grade.findByPk(grade_id);
-    if (!grade) throw new Error('Invalid grade ID');
-  }
-
-  if (coreSubject_id) {
-    const coreSubject = await CoreSubjects.findByPk(coreSubject_id);
-    if (!coreSubject) throw new Error('Invalid core subject ID');
-  }
-
-  if (subject_id) {
-    const subject = await Subjects.findByPk(subject_id);
-    if (!subject) throw new Error('Invalid subject ID');
-  }
-
-
-    const existingTest = await Test.findOne({ where: { name } });
-    if (existingTest) {
-      throw new Error('A test with this name already exists');
+    if (grade_id) {
+        const grade = await Grade.findByPk(grade_id);
+        if (!grade) throw new Error('Invalid grade ID');
     }
+
+    if (coreSubject_id) {
+        const coreSubject = await CoreSubjects.findByPk(coreSubject_id);
+        if (!coreSubject) throw new Error('Invalid core subject ID');
+    }
+
+    if (subject_id) {
+        const subject = await Subjects.findByPk(subject_id);
+        if (!subject) throw new Error('Invalid subject ID');
+    }
+
+    if (name) {
+        const existingTest = await Test.findOne({ where: { name } });
+        if (existingTest) {
+            throw new Error('A test with this name already exists');
+        }
+    }
+
 
     const updatedTest = await test.update({
         name: name ?? test.name,
         coreSubject_id: coreSubject_id ?? test.coreSubject_id,
         subject_id: subject_id ?? test.subject_id,
         grade_id: grade_id ?? test.grade_id,
-        text_URL: text_URL ?? test.text_URL,
+        test_URL: test_URL ?? test.test_URL,
     })
 
     return updatedTest
@@ -64,7 +68,7 @@ const createTest = async (teacherId, testData) => {
 
     const { name, coreSubject_id, subject_id, grade_id, text_URL } = testData
 
-    
+
     const user = await User.findOne({ where: { id: teacherId, role: 'teacher' } })
     if (!user) {
         throw new Error('Teacher not found');

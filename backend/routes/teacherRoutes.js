@@ -1,7 +1,7 @@
 const teacherController = require('../controllers/teacherController')
 const express = require('express');
 const router = express.Router()
-const {authenticateToken, isAdminTeacher} = require('../middleware/authMiddleware')
+const {authenticateToken, isAdminTeacher, isStudent} = require('../middleware/authMiddleware')
 
 
 const Joi = require('joi')
@@ -30,6 +30,10 @@ router.get('/:id',
     isAdminTeacher,
     validateParams(teacherParamsIdSchema),
     teacherController.getTeacherById)
+router.get('/teacher-name/:id', 
+    authenticateToken, 
+    validateParams(teacherParamsIdSchema),
+    teacherController.getTeacherNameById)
     router.get('/:id/students', 
     authenticateToken, 
     isAdminTeacher,
@@ -129,6 +133,28 @@ module.exports = router;
 
 
 
+ * /api/teachers/teacher-name/{id}:
+ *   get:
+ *     summary: Get a Teacher Name by ID
+ *     tags: [Teachers]
+ *     operationId: getTeacherById
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The Teacher ID
+ *     responses:
+ *       200:
+ *         description: The Teacher data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserTeacherView'
+ *       404:
+ *         description: Teacher not found
 
  * /api/teachers/{id}:
  *   get:

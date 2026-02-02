@@ -1,11 +1,13 @@
-type SubTitleName =  {
-    name: string
+type SubTitleName = {
+    name: string,
+    color?: string,
+    direction?: string
 }
 
-const SubTitle = ({name}: SubTitleName) => {
-    return(
+const SubTitle = ({ name, color, direction }: SubTitleName) => {
+    return (
         <>
-        <h2>{name}</h2>
+            <h2 className={`${direction} ${color} mb-4 text-capitalize`}>{name}</h2>
         </>
     )
 }

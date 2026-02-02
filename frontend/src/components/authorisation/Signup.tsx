@@ -4,11 +4,9 @@ import Submit from "../form/Submit"
 import auth from "../../api/manageAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import Title from "../basic/Title";
-
-
-import type { RegistrationFormType } from "../../types"
+import './Auth.css'
 import useForm from "../../hooks/useForm";
+import AuthLayout from "./AuthLayout";
 
 
 const SingUp = () => {
@@ -27,23 +25,6 @@ const SingUp = () => {
         'phoneNumber': '',
         'role': "student",
     })
-    // const [registrationForm, setRegistrationForm] = useState<RegistrationFormType>({
-    //     'username': '',
-    //     'password': '',
-    //     'name': '',
-    //     'email': '',
-    //     'address': '',
-    //     'phoneNumber': '',
-    //     'role': "student",
-
-
-
-    // })
-
-    // const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
-    //     const { value, name } = e.target
-    //     setRegistrationForm({ ...registrationForm, [name]: value })
-    // }
 
     const handleRegistration = async () => {
         setIsLoading(true)
@@ -61,16 +42,6 @@ const SingUp = () => {
             if (logData.success) {
                 loginToken(logData.data!.token, logData.data!.user)
 
-                // setRegistrationForm({
-                //     'username': '',
-                //     'password': '',
-                //     'name': '',
-                //     'email': '',
-                //     'address': '',
-                //     'phoneNumber': '',
-                //     'role': "student"
-
-                // });
                 resetForm()
 
                 navigate('/dashboard');
@@ -89,70 +60,66 @@ const SingUp = () => {
 
     }
     return (
-        <div className="container">
-            <Title name="join to testroom"></Title>
-            <div className="formContainer">
-                <div className="input-inner">
+        <AuthLayout isLoading={isLoading} >
+            <div className="input-inner registration-form">
 
-                    <Input
-                        name="username"
-                        type="text"
-                        label_name="your username"
-                        value={registrationForm.username}
-                        placeholder="user name"
-                        onChange={handleUserInput}
-                    />
-                    <Input
-                        name="password"
-                        type="password"
-                        label_name="your password"
-                        value={registrationForm.password}
-                        placeholder="password"
-                        onChange={handleUserInput}
-                    />
-                    <Input
-                        name="name"
-                        type="text"
-                        label_name="your name"
-                        value={registrationForm.name ?? ''}
-                        placeholder="your name"
-                        onChange={handleUserInput}
-                    />
-                    <Input
-                        name="email"
-                        type="email"
-                        label_name="your email"
-                        value={registrationForm.email}
-                        placeholder="your email"
-                        onChange={handleUserInput}
-                    />
-                    <Input
-                        name="phoneNumber"
-                        type="tel"
-                        label_name="your phone number"
-                        value={registrationForm.phoneNumber ?? ""}
-                        placeholder="your phone number"
-                        onChange={handleUserInput}
-                    />
-                    <Input
-                        name="address"
-                        type="text"
-                        label_name="your address"
-                        value={registrationForm.address ?? ''}
-                        placeholder="your address"
-                        onChange={handleUserInput}
-                    />
+                <Input
+                    name="username"
+                    type="text"
+                    label_name="your username"
+                    value={registrationForm.username}
+                    placeholder="johnsmit"
+                    onChange={handleUserInput}
+                />
+                <Input
+                    name="password"
+                    type="password"
+                    label_name="your password"
+                    value={registrationForm.password}
+                    placeholder="*********"
+                    onChange={handleUserInput}
+                />
+                <Input
+                    name="john smit"
+                    type="text"
+                    label_name="your name"
+                    value={registrationForm.name ?? ''}
+                    placeholder="john smit"
+                    onChange={handleUserInput}
+                />
+                <Input
+                    name="email"
+                    type="email"
+                    label_name="your email"
+                    value={registrationForm.email}
+                    placeholder="johnsmit@gmail.com"
+                    onChange={handleUserInput}
+                />
+                <Input
+                    name="phoneNumber"
+                    type="tel"
+                    label_name="your phone number"
+                    value={registrationForm.phoneNumber ?? ""}
+                    placeholder="123456789"
+                    onChange={handleUserInput}
+                />
+                <Input
+                    name="address"
+                    type="text"
+                    label_name="your address"
+                    value={registrationForm.address ?? ''}
+                    placeholder="canada, toronto"
+                    onChange={handleUserInput}
+                />
 
-                    <Submit name='Sign Up' onClick={handleRegistration} disabled={isLoading} />
-                    {error && <div className="error-message">
-                        <p>{error}</p>
-                    </div>
-                    }
+                <Submit name='Sign Up' onClick={handleRegistration} disabled={isLoading} />
+                {error && <div className="error-message ">
+                    <p>{error}</p>
                 </div>
-                {isLoading && <div className="loading">Processing...</div>}
+                }
                 <Link to='/login'>back to login</Link>
             </div>
-        </div>
+        </AuthLayout>
 
     )
 }

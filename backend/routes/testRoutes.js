@@ -19,7 +19,7 @@ const testUpdateSchema = Joi.object({
     grade_id: Joi.string().uuid().optional(),
     coreSubject_id: Joi.string().uuid().optional(),
     subject_id: Joi.string().uuid().optional(),
-    text_URL:Joi.string().optional()
+    test_URL:Joi.string().optional()
 });
 const paramsTecherIdSchema = Joi.object({
     teacherId: Joi.string().uuid().required(),

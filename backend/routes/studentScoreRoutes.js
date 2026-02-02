@@ -44,7 +44,6 @@ router.post('/:test_id/:student_id',
     studentScoreController.createStudentScore)
 router.post('/calculate/:test_id/:student_id', 
     authenticateToken,
-     isAdminTeacher,
      validateParams(studentTestParamSchema),
     studentScoreController.createScoreByTestIDByStudentID)
 router.put('/:id', 

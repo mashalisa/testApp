@@ -146,6 +146,22 @@ const studentTestController = {
             })
         }
 
+    },
+        async assignTestToStudnets(req, res) {
+        try {
+             const { status, studentIds } = req.validatedBody
+            const entry = await studentTestService.assignTestToStudent(req.validatedParams.testId, studentIds, status)
+            res.status(200).json({
+                success: true,
+                data: entry
+            })
+        } catch (error) {
+            res.status(404).json({
+                success: false,
+                error: error.message
+            })
+        }
+
     }
 }
 

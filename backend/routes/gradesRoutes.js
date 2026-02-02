@@ -2,7 +2,7 @@
 
 const gradesController = require('../controllers/gradeController')
 
-const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher, isStudent } = require('../middleware/authMiddleware')
 
 const express = require('express')
 
@@ -20,6 +20,10 @@ const gradeTeacherSchema = Joi.object({
 const gradeParamSchema = Joi.object({
     id: Joi.string().uuid().required(),
     teacherId: Joi.string().uuid().required(),
+});
+const gradeIdParamSchema = Joi.object({
+    id: Joi.string().uuid().required()
+
 });
 const gradeTeacherParamSchema = Joi.object({
     teacherId: Joi.string().uuid().required(),
@@ -39,8 +43,7 @@ router.get('/', authenticateToken, isAdminTeacher,
     gradesController.getAllGrades)
 router.get('/:id',
     authenticateToken,
-    isAdminTeacher,
-    validateParams(gradeParamSchema),
+    validateParams(gradeIdParamSchema),
     gradesController.getGradeByID)
 router.post('/',
     authenticateToken,

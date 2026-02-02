@@ -12,6 +12,11 @@ const testStudentSchema = Joi.object({
     start_time: Joi.date().optional(),
     end_time: Joi.date().optional(),
 });
+
+const testStudentsIdSchema = Joi.object({
+     studentIds: Joi.array().items(Joi.string().uuid()).min(1).required()
+
+});
 const testStudentUpdateSchema = Joi.object({
     status: Joi.string().valid('in_progress', 'completed', 'submitted').optional(),
     start_time: Joi.date().optional(),
@@ -51,7 +56,7 @@ router.get('/students/:studentId/tests',
     validateParams(studetnIdParamsSchema),
     studentTestController.getAllTestsByStudentId)
 
-router.get('/students/:studentId/my-test',
+router.get('/students/:studentId/my-tests',
     authenticateToken,
     isStudent,
        validateParams(studetnIdParamsSchema),
@@ -90,6 +95,13 @@ router.delete('/:id',
     isAdminTeacher,
      validateParams(paramsIdSchema),
     studentTestController.deleteStudentTest)
+
+router.post('/test/:testId/',
+    authenticateToken,
+    isAdminTeacher,
+       validateParams(testIdParamsIdSchema),
+          validate(testStudentsIdSchema),
+    studentTestController.assignTestToStudnets)
 
 module.exports = router
 
@@ -423,6 +435,34 @@ module.exports = router
  *         description: Entry not found
  */
 
-
-
-
+/**
+ * @swagger
+ * /api/student-tests/test/{testId}:
+ *   post:
+ *     summary: Assign test to students
+ *     tags: [StudentTests]
+ *     parameters:
+ *       - in: path
+ *         name: testId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - studentIds
+ *             properties:
+ *               studentIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *     responses:
+ *       201:
+ *         description: Tests assigned successfully
+ */

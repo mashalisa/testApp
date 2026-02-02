@@ -1,17 +1,17 @@
 
-const { User, gradeToTeacher } = require('../configDB/models');
-const Grades = require('../configDB/models/grades')
+const { User, gradeToTeacher, Grade } = require('../models');
+
 
 
 const getAllGrades = async () => {
-    const grades = await Grades.findAll({
+    const grades = await Grade.findAll({
         attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
     return grades;
 }
 
 const getGradeById = async (id) => {
-    const grade = await Grades.findByPk(id, {
+    const grade = await Grade.findByPk(id, {
         attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
     if (!grade) {
@@ -21,25 +21,25 @@ const getGradeById = async (id) => {
 }
 
 const getGradeByName = async (name) => {
-    const grade = await Grades.findOne({
+    const grade = await Grade.findOne({
         where: { name },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
     return grade
 }
 const createNewGrade = async (name) => {
-    const exisingGrade = await Grades.findOne({ where: { name } });
+    const exisingGrade = await Grade.findOne({ where: { name } });
     if (exisingGrade) {
         throw new Error('this grade already exists');
     }
 
-    const newGrade = await Grades.create({ name });
+    const newGrade = await Grade.create({ name });
 
     return newGrade
 }
 
 const updateGrade = async (id, name) => {
-    const grade = await Grades.findByPk(id)
+    const grade = await Grade.findByPk(id)
 
     const exisingGrade = await Grades.findOne({ where: { name } });
     if (exisingGrade) {
@@ -51,7 +51,7 @@ const updateGrade = async (id, name) => {
 }
 
 const deleteGrade = async (id) => {
-    const grade = await Grades.findByPk(id)
+    const grade = await Grade.findByPk(id)
     if (!grade) {
         throw new Error('grade not found')
 
@@ -66,7 +66,7 @@ const assignGradesToTeacher = async (teacherId, grades) => {
         throw new Error('teacher not found')
 
     }
-    const gradeRecords = await Grades.findAll({ where: { id: grades } })
+    const gradeRecords = await Grade.findAll({ where: { id: grades } })
     if (gradeRecords.length !== grades.length) {
         throw new Error("One or more grades not found");
     }

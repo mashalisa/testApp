@@ -2,11 +2,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "../components/authorisation/Login";
 import Signup from "../components/authorisation/Signup";
 import { useAuth } from "../hooks/useAuth";
-import DashboardTeacher from "../components/teachers/Dashboard";
-import DashboardStudent from "../components/students/Dashboard";
-import DashboardAdmin from "../components/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import { TeacherRoute } from "./TeacherRoute";
+import { StudentRoute } from "./StudentRoute";
 
 
 
@@ -40,8 +38,13 @@ const AppRoute = () => {
             />
             
             {TeacherRoute}
+            {StudentRoute}
+       
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
+
+        
+ 
         </Routes>
     );
 };

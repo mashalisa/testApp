@@ -83,9 +83,11 @@ const assignCurrentStudentAnswerToTestByIds = async(req, res) => {
     try {
         const { studentId, testId } = req.validatedParams;
     const authenticatedUserId = req.user.id;
+console.log("studentId:", studentId, typeof studentId, studentId.length);
+console.log("authUserId:", authenticatedUserId, typeof authenticatedUserId, authenticatedUserId.length);
+console.log("equal:", studentId === authenticatedUserId);
 
-
-    if (studentId !== authenticatedUserId) {
+   if (studentId.trim() !== authenticatedUserId.trim()) {
       return res.status(403).json({
         success: false,
         error: "Access denied — you can only view your own tests"

@@ -14,7 +14,7 @@ const answersNameArray = Joi.array().items(Joi.object({
 
 const answerIdsArray = Joi.array().items(Joi.object({
          question: Joi.string().uuid().required(),
-         answer: Joi.string().uuid().required()
+         answer: Joi.array().items(Joi.string().uuid()).min(1).required()
     })).min(1);
 
 
@@ -61,6 +61,11 @@ router.post('/by-id/student/:studentId/test/:testId/submit',
       authenticateToken,
        isStudent,
           validateParams(studentTestParamSchema),
+          (req, res, next) => {
+    console.log('req.body type:', typeof req.body);
+    console.log('req.body:', req.body);
+    next();
+  },
          validate(answerIdsArray),
       studentAnswerController.assignCurrentStudentAnswerToTestByIds)
       
@@ -216,7 +221,7 @@ module.exports = router;
  * @swagger
  * /testAnswers/by-id/student/{studentId}/test/{testId}:
  *   post:
- *     summary: Assign student answers to a test (using question and answer names)
+ *     summary: Assign student answers to a test (using question and answer ids)
  *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path
@@ -286,7 +291,7 @@ module.exports = router;
  * @swagger
  * /testAnswers/by-id/student/{studentId}/test/{testId}/submit:
  *   post:
- *     summary: Assign student answers to a test (using question and answer names)
+ *     summary: Assign student answers to a test (using question and answer ids)
  *     tags: [StudentAnswer]
  *     parameters:
  *       - in: path

@@ -1,5 +1,5 @@
 
-const { CoreSubjects, Grade, User } = require('../configDB/models')
+const { CoreSubjects, Grade, User } = require('../models')
 
 
 const getAllCoreSubjects = async () => {

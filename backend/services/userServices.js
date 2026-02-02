@@ -1,5 +1,5 @@
 
-const User = require('../configDB/models/users')
+const {User} = require('../models')
 
 
 const getAllUsers = (async() => {

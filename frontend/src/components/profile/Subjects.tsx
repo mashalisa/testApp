@@ -1,33 +1,28 @@
 
-import Title from "../basic/Title"
-import SubTitle from "../basic/SubTitle"
+
 import { useEffect, useState } from "react"
 import { getProfileInfoByTeacher, getSubjects, updateSubjects } from "../../api/manageProfile"
 import { useAuth } from "../../hooks/useAuth"
-import Submit from '../form/Submit'
 import { Link } from "react-router-dom"
-import type { NameResponse } from "../../types"
+import type { NameResponse, UpdateResponse } from "../../types"
+import useApi from "../../hooks/useApi"
+import HeaderSteps from "./headerSteps"
+import Card from "../basic/Card"
+import StepSelector from "./StepSelector"
 
 const Subjects = () => {
     const { token, user } = useAuth()
-    const [subjects, setSubjects] = useState<NameResponse[]>([])
     const [subjectsSelected, setSubjectsSelected] = useState<string[]>([])
     const [teacherSubjects, setTeacherSubjects] = useState<NameResponse[]>([])
+    const { data: subjects, execute: loadSubjects, isLoading } = useApi(getSubjects)
+    const { execute: execudetUpdatedSubjects, isLoading: isUpdatedLoading } =
+        useApi<UpdateResponse, [string, string, { subjectsData: string[] }]>(updateSubjects)
+
+
     useEffect(() => {
 
         if (!token || !user) return
-        const loadSubjects = async () => {
-            console.log('sub')
-            try {
-                const data  = await getSubjects(token)
-                console.log(data, 'subjects')
-                setSubjects(data)
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        loadSubjects()
+        loadSubjects(token)
         displayTeacherCoreSubjects()
     }, [token])
 
@@ -37,7 +32,7 @@ const Subjects = () => {
             [...prev, id])
     }
 
-    
+
 
     const handleSubjects = async () => {
         if (!token || !user) {
@@ -45,16 +40,9 @@ const Subjects = () => {
             return
         }
 
-        const subjectTeacherData = { subjectsData: subjectsSelected };
-
-        try {
-            const assignedGradesToTeacher = await updateSubjects(token, user.id, subjectTeacherData)
-            console.log(assignedGradesToTeacher)
-            displayTeacherCoreSubjects()
-            setSubjectsSelected([])
-        } catch (err) {
-            console.error(err)
-        }
+        const response = await execudetUpdatedSubjects(token, user.id, { subjectsData: subjectsSelected })
+        displayTeacherCoreSubjects()
+        setSubjectsSelected([])
     }
     const displayTeacherCoreSubjects = async () => {
         if (!token || !user) return
@@ -70,24 +58,28 @@ const Subjects = () => {
     }
     return (
         <>
-           
-                <Title name="Create your profile" />
-                <SubTitle name="choose your subjects" />
-                <div>
-                    {subjects && subjects.map((subject) => (
-                        <div key={subject.id}
-                            onClick={() => selectSubjects(subject.id)}>{subject.name}</div>
-                    ))}
-                </div>
-                <Submit name="set your subjects" onClick={handleSubjects} />
+            <HeaderSteps activeStep='subjects' />
 
-                <div className="list">
-                    {teacherSubjects && teacherSubjects.map((subjects) => (
-                        <div key={subjects.id}  >{subjects.name}</div>
-                    ))}
-                </div>
-                <Link to='/teacher-students' >create your students list</Link>
-          
+            <Card className="m-auto" width="col-md-8 col-lg-8">
+                <StepSelector
+                    title="Choose your subject"
+                    description="Select one or more  subjects you teach"
+                    availableTitle="available subjects"
+                    items={subjects ?? []}
+                    selectedIds={subjectsSelected}
+                    onSelect={selectSubjects}
+                    onSubmit={handleSubjects}
+                    isLoading={isLoading}
+                    teacherItems={teacherSubjects}
+                    name='subject'
+                />
+
+            </Card>
+
+            <div className="text-center mt-3">
+                <Link to='/teacher-students' className="   color-white">create your students list</Link>
+            </div>
+
 
         </>
     )

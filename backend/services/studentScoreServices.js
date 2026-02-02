@@ -1,4 +1,4 @@
-const {StudentScore, Question, Answer, StudentAnswer, StudentTest} = require('../configDB/models')
+const {StudentScore, Question, Answer, StudentAnswer, StudentTest} = require('../models')
 
 
 
@@ -55,7 +55,7 @@ const createScoreByTestIDByStudentID = async (test_id, student_id) => {
   if (existingScore) {
     await existingScore.update({ score })
   } else {
-    existingScore = await StudentScore.create({ student_id, test_id, score })
+    existingScore = await StudentScore.create({ student_id, test_id, score, total_questions: totalQuestions, correct_answers: correctCount })
   }
 
   return {

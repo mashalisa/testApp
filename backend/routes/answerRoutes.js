@@ -13,6 +13,10 @@ const answersArraySchema = Joi.array().items(answerSchema).min(1);
 const answerParamSchema = Joi.object({
     questionId: Joi.string().uuid().required(),
 });
+const answerByIdParamSchema = Joi.object({
+    name: Joi.string().trim().min(1).optional(),
+       correctAnswer: Joi.boolean().optional(),
+})
 const answerParamIdSchema = Joi.object({
     id: Joi.string().uuid().required(),
 });
@@ -38,6 +42,13 @@ router.put('/questions/:questionId',
     validateParams(answerParamSchema),
     validate(answersArraySchema),
     answerController.updateAnswer)
+
+    router.put('/:id',
+    authenticateToken,
+    isAdminTeacher,
+    validateParams(answerParamIdSchema),
+      validate(answerByIdParamSchema),
+    answerController.updateAnswerById)
 
 router.delete('/:id',
     authenticateToken,
@@ -129,6 +140,38 @@ module.exports = router;
  *               $ref: '#/components/schemas/Answer'
  *       404:
  *         description: User not found
+ *
+ *   put:
+ *     summary: Update a Answer by ID
+ *     tags: [Answers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The Answer ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - correctAnswer
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "question number 1"
+ *               correctAnswer:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Answer updated
+ *       404:
+ *         description: Answer not found
  *
  *   delete:
  *     summary: Delete a Answer by ID

@@ -1,7 +1,7 @@
 // npm install swagger-ui-express swagger-jsdoc
 
 const coreSubjectController = require('../controllers/coreSubjectController')
-const { authenticateToken, isAdminTeacher } = require('../middleware/authMiddleware')
+const { authenticateToken, isAdminTeacher, isStudent } = require('../middleware/authMiddleware')
 const express = require('express')
 
 const router = express.Router();
@@ -36,7 +36,6 @@ router.get('/', authenticateToken, isAdminTeacher,
     coreSubjectController.getAllCoreSubject)
 router.get('/:id',
     authenticateToken,
-    isAdminTeacher,
     validateParams(coreSubjectParamSchema),
     coreSubjectController.getCoreSubjectByID)
 

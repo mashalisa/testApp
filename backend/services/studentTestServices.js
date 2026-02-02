@@ -1,8 +1,9 @@
 
-const { User, StudentTest, Test } = require('../configDB/models')
+const { User, StudentTest, Test } = require('../models')
 
 
 const getAllTestsByStudent = async (studentId) => {
+    console.log(studentId, 'studentId')
     const tests = await StudentTest.findAll({
         where: { user_id: studentId },
         include: [Test]
@@ -44,24 +45,27 @@ const createNewTestByStudent = async (testId, studentId, studentTestData) => {
     const { start_time, status } = studentTestData
 
 
-    const existingEntry = await StudentTest.findOne({ where: { user_id: studentId, test_id: testId } })
-
-    if (existingEntry) {
-        throw new Error('this student already has a record for htis test')
-    }
-
-    const newStudentTest = await StudentTest.create(
-        {
-            user_id: studentId,
+    const studentTest  = await StudentTest.findOne({
+         where: {
+             user_id: studentId, 
             test_id: testId,
-            status: status || 'in_progress',
-            start_time: studentTestData.start_time || new Date(),
-            end_time: studentTestData.end_time || null
-        }
+              status: 'waiting' }
+             })
 
-    )
+    if (!studentTest ) {
+      throw new Error('Test not assigned or already started');
+    }
+if (studentTest.status === 'in_progress') {
+  throw new Error('This test is already in progress');
+}
+    studentTest.status = 'in_progress';
+  studentTest.start_time = new Date();
 
-    return newStudentTest
+  await studentTest.save();
+
+  return studentTest;
+
+  
 }
 
 const updateStudentTest = async (testId, studentId, studentTestData) => {
@@ -87,7 +91,40 @@ const deleteStudentTest = async (id) => {
 
     return 'deleted successfully'
 }
+const assignTestToStudent = async (testId, studentIds) => {
+    const test = await Test.findByPk(testId)
+    if (!test) {
+        throw new Error('test no fund ')
+    }
+    const results = [];
+    for (const studentId of studentIds) {
+        const student = await User.findOne({ where: { id: studentId, role: 'student' } })
+        if (!student) {
+            throw new Error(`Student not found: ${studentId}`);
+        }
+        const existing = await StudentTest.findOne({ where: { test_id: testId, user_id: studentId } });
+        if (existing) {
+            throw new Error(`Test already assigned to student: ${studentId}`);
+        }
 
+        const entry = await StudentTest.create({
+            user_id: studentId,
+            test_id: testId,
+            status: 'waiting',
+        });
+
+        results.push(entry);
+
+    };
+    return results;
+
+}
 module.exports = {
-    deleteStudentTest, getAllTestsByCurrentStudent, updateStudentTest, createNewTestByStudent, getAllStudentsByTestId, getAllTestsByStudent
+    deleteStudentTest,
+    getAllTestsByCurrentStudent,
+    updateStudentTest,
+    createNewTestByStudent,
+    getAllStudentsByTestId,
+    getAllTestsByStudent,
+    assignTestToStudent
 }

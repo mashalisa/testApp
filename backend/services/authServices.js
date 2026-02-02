@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const {User} = require('../configDB/models')
+const {User} = require('../models')
 const jwt = require('jsonwebtoken')
 
 const resiveUser = (user) => ({

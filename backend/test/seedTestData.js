@@ -1,4 +1,4 @@
-const {sequelize} = require('../configDB/sequelize')
+const {sequelize} = require('../config/sequelize')
 
 const {  User,
   Grade,
@@ -6,7 +6,7 @@ const {  User,
   Subjects,
   Test,
   Question,
-  Answer} = require('../configDB/models')
+  Answer} = require('../models')
 
 
   async function  seedTestData() {

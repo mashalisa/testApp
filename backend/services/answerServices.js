@@ -1,69 +1,72 @@
-const {Answer, Question} = require('../configDB/models')
+const { Answer, Question } = require('../models')
 
-const getAllAnswers = async() => {
-    const answers = await Answer.findAll()
-    if(!answers || answers.length === 0) {
-        throw new Error ('answers not found')
-    }
-    return answers
+const getAllAnswers = async () => {
+  const answers = await Answer.findAll()
+  if (!answers || answers.length === 0) {
+    throw new Error('answers not found')
+  }
+  return answers
 }
-const getAnswerById = async(id) => {
-    const answer = await Answer.findByPk(id)
-    if(!answer ) {
-        throw new Error ('answers not found')
-    }
+const getAnswerById = async (id) => {
+  const answer = await Answer.findByPk(id)
+  if (!answer) {
+    throw new Error('answers not found')
+  }
 
-    return answer
-}
-
-const getAnswersByQuestionId = async(questionId) => {
-      const answers = await Answer.findAll({ where: { question_id: questionId } });
-    if(!answers ) {
-        throw new Error ('answers not found')
-    }
-
-    return answers
+  return answer
 }
 
-const createAnswer = async(questionId, answersArray) => {
+const getAnswersByQuestionId = async (questionId) => {
+  const answers = await Answer.findAll({ where: { question_id: questionId } });
+  if (!answers) {
+    throw new Error('answers not found')
+  }
 
- 
-    const question = await Question.findByPk(questionId)
-    if(!question) {
-         throw new Error ('question not found')
-    }
+  return answers
+}
 
-    if (!Array.isArray(answersArray) || answersArray.length === 0) {
+const createAnswer = async (questionId, answersArray) => {
+
+
+  const question = await Question.findByPk(questionId)
+  if (!question) {
+    throw new Error('question not found')
+  }
+
+  if (!Array.isArray(answersArray) || answersArray.length === 0) {
     throw new Error('Answers array is required');
   }
-    
-  
-const createdAnswers = []
-    for (const answerData of answersArray) {
-        const { name, correctAnswer } = answerData;
-          if (!name || correctAnswer === undefined) {
+
+  const hasCorrectAnswer  = answersArray.some(a => a.correctAnswer === true)
+  if(!hasCorrectAnswer) {
+     throw new Error('At least one answer must be marked as correct');
+  }
+  const createdAnswers = []
+  for (const answerData of answersArray) {
+    const { name, correctAnswer } = answerData;
+    if (!name || correctAnswer === undefined) {
       throw new Error('Missing name or correctAnswer for an answer');
     }
 
-     const exists = await Answer.findOne({
+    const exists = await Answer.findOne({
       where: { name, question_id: questionId },
     });
     if (exists) {
       throw new Error(`Answer "${name}" already exists for this question`);
     }
-      const newAnswer = await Answer.create({
+    const newAnswer = await Answer.create({
       name,
       correctAnswer,
       question_id: questionId,
     });
     createdAnswers.push(newAnswer);
-    }
+  }
 
-    return createdAnswers
+  return createdAnswers
 }
 
-const updateAnswerById = async(questionId, answersArray) => {
- const question = await Question.findByPk(questionId);
+const updateAnswerById = async (questionId, answersArray) => {
+  const question = await Question.findByPk(questionId);
   if (!question) throw new Error('Question not found');
 
   if (!Array.isArray(answersArray) || answersArray.length === 0) {
@@ -73,33 +76,53 @@ const updateAnswerById = async(questionId, answersArray) => {
   // Remove old answers
   await Answer.destroy({ where: { question_id: questionId } });
 
-const createdAnswers = []
-    for (const answerData of answersArray) {
-        const { name, correctAnswer } = answerData;
-          if (!name || correctAnswer === undefined) {
+  const createdAnswers = []
+  for (const answerData of answersArray) {
+    const { name, correctAnswer } = answerData;
+    if (!name || correctAnswer === undefined) {
       throw new Error('Missing name or correctAnswer for an answer');
     }
 
-      const newAnswer = await Answer.create({
+    const newAnswer = await Answer.create({
       name,
       correctAnswer,
-        question_id: questionId
+      question_id: questionId
     });
     createdAnswers.push(newAnswer);
-    }
+  }
 
-    return createdAnswers
+  return createdAnswers
 }
 
-const deleteAnswerById = async(id) => {
-    const answer = await Answer.findByPk(id)
-    if(!answer ) {
-        throw new Error ('answers not found')
-    }
-    await answer.destroy()
-    return 'answer was deleted successfuly'
+
+const updateAnswerByAnswerId = async (answerId, answerData) => {
+  const answer = await Answer.findByPk(answerId);
+  if (!answer) throw new Error('answer not found');
+
+
+  const updatedAnswer = await answer.update({
+    name: answerData.name ?? answer.name,
+    correctAnswer: answerData.correctAnswer ?? answer.correctAnswer,
+  })
+
+  return updatedAnswer
+
+}
+const deleteAnswerById = async (id) => {
+  const answer = await Answer.findByPk(id)
+  if (!answer) {
+    throw new Error('answers not found')
+  }
+  await answer.destroy()
+  return 'answer was deleted successfuly'
 }
 
 module.exports = {
-    deleteAnswerById,updateAnswerById, createAnswer, getAnswerById, getAllAnswers,getAnswersByQuestionId
+  deleteAnswerById,
+  updateAnswerById,
+  updateAnswerByAnswerId,
+  createAnswer,
+  getAnswerById,
+  getAllAnswers,
+  getAnswersByQuestionId
 }
